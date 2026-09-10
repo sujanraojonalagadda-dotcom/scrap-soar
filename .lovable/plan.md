@@ -1,6 +1,6 @@
 # Kabadiwala Connect — Phase 1: Collector App
 
-Build the collector app only, screen by screen as you share them. Recycler dashboard comes later.
+Build the collector app only, screen by screen as you share them.
 
 ## Technologies note
 
@@ -26,7 +26,7 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 - Header: "Identify E-Waste".
 - Large camera preview / placeholder area.
 - "TAKE PHOTO" button, plus "Or select from gallery" link.
-- Photo is uploaded to storage; in this phase it can be used as-is or fed to the AI in Screen 4.
+- Photo is uploaded to storage.
 
 ## Screen 4 — AI Result (as sketched)
 
@@ -34,7 +34,7 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 - Preview of the captured image.
 - AI-detected category (e.g. 💻 Laptop) and confidence percentage.
 - User can tap "YES" to confirm or "CHANGE" to pick/enter the correct category.
-- AI maps image → category only. Price calculation is separate and happens in a later step.
+- AI maps image → category only. Price calculation is separate.
 
 ## Screen 5 — Weight & Condition (as sketched)
 
@@ -48,10 +48,15 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 
 - Header: "PRICE ESTIMATE".
 - Summary of inputs: category, weight, condition.
-- Indicative value computed from weight × recycler rate for that category.
-- Condition can adjust the rate (e.g. 100% Working, 75% Partially Working, 50% Not Working).
+- Indicative value computed from weight × recycler rate for that category, adjusted by condition.
 - Subtext: "*Final price confirmed during handover".
 - "FIND RECYCLERS" button.
+
+## Screen 7 — Verified Recyclers (as sketched)
+
+- Header: "VERIFIED RECYCLERS ♻️".
+- Cards showing recyclers: name, verified badge, rating, rate per kg, distance, "SELECT" button.
+- Selecting a recycler creates a pickup request in "pending" status.
 
 ## Profile
 
@@ -61,11 +66,12 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 ## Technical notes
 
 - TanStack Start, React, TypeScript, Tailwind; mobile-first layout matching your sketches (centred phone-width card on desktop).
-- Lovable Cloud: phone auth (or email fallback), profiles table, pickup requests table, category rate table, row-level security so each collector only sees their own data.
+- Lovable Cloud: phone auth (or email fallback), profiles table, pickup requests table, category rate table, recyclers table, row-level security so each collector only sees their own data.
 - Mobile number validated (+91, 10 digits); 6-digit OTP with expiry and resend throttling.
-- Camera works from the phone browser via the standard HTML media capture; gallery via file input. Photos are uploaded to Lovable Cloud storage.
-- AI image classification: Lovable AI Gateway call from a server function, using a vision model. Returns one of the supported categories and a confidence score.
+- Camera via phone browser media capture; gallery via file input. Photos uploaded to Lovable Cloud storage.
+- AI image classification: Lovable AI Gateway call from a server function, using a vision model. Returns category + confidence.
 - Price engine: per-category rate in Cloud table; condition applies a multiplier. No market-price AI prediction.
+- Verified recyclers stored in a backend table; for Phase 1 seeded with sample data.
 - Clean, trustworthy recycling-green design in the spirit of the sketch; I'll propose visual directions before building.
 
 ## Open questions
