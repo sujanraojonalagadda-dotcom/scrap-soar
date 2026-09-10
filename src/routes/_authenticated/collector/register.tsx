@@ -23,6 +23,7 @@ function RegisterPage() {
   const [name, setName] = useState("");
   const [language, setLanguage] = useState("en");
   const [location, setLocation] = useState("");
+  const [role, setRole] = useState<"collector" | "recycler">("collector");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +31,7 @@ function RegisterPage() {
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) return;
       const existing = await getMyProfile(data.user.id).catch(() => null);
-      if (existing) navigate({ to: "/collector/home" });
+      if (existing) navigate({ to: existing.role === "recycler" ? "/recycler/home" : "/collector/home" });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -52,8 +53,9 @@ function RegisterPage() {
         phone: data.user.phone ? `+${data.user.phone.replace(/^\+/, "")}` : null,
         language,
         location: location.trim() || null,
+        role,
       });
-      navigate({ to: "/collector/home" });
+      navigate({ to: role === "recycler" ? "/recycler/register" : "/collector/home" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save your profile.");
     } finally {
@@ -71,6 +73,25 @@ function RegisterPage() {
           <h1 className="mt-3 text-lg font-bold text-brand-dark">Complete your profile</h1>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <span className="mb-1.5 block text-sm font-medium text-foreground">I am a</span>
+            <div className="grid grid-cols-2 gap-2">
+              {(["collector", "recycler"] as const).map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setRole(r)}
+                  className={`h-12 rounded-lg border text-base font-medium capitalize ${
+                    role === r
+                      ? "border-brand bg-brand-light text-brand-dark"
+                      : "border-border bg-background text-muted-foreground"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
           <div>
             <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-foreground">
               Your name

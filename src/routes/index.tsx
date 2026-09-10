@@ -53,7 +53,11 @@ function LoginPage() {
   async function routeAfterLogin(userId: string) {
     try {
       const profile = await getMyProfile(userId);
-      navigate({ to: profile ? "/collector/home" : "/collector/register" });
+      if (!profile) {
+        navigate({ to: "/collector/register" });
+        return;
+      }
+      navigate({ to: profile.role === "recycler" ? "/recycler/home" : "/collector/home" });
     } catch {
       navigate({ to: "/collector/register" });
     }
