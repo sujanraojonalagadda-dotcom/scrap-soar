@@ -135,6 +135,8 @@ Smart Matching score (price / distance / material / verification with an overall
 - Receipt number generated server-side on completion (KC-YYYY-NNNNNN).
 - Recycling-green, high-contrast, large-tap-target design suited to outdoor phone use; I'll propose visual directions before building.
 
-## Open question
+## About real phone OTP
 
-Login by mobile OTP needs an SMS provider account (e.g. Twilio) connected to the project. If you don't have one yet, I'll build the same screen with a demo OTP flow and swap in real SMS when the provider is ready — tell me which you prefer.
+I can't add Firebase here — this builder has its own backend, Lovable Cloud, and Firebase's SDK, Firestore and console setup don't apply to it. Firebase is also not required for what you're asking: Lovable Cloud has real phone sign-in built in, sending a genuine SMS code to a real number, with the code never visible to the app or the screen. That satisfies every point in your list — real SMS, no fake or displayed code, no mock login, no Twilio in your own code, protected pages, logout, profile saved after sign-in.
+
+One thing I'll need from you: turning on phone sign-in asks for an SMS sending account inside the Cloud settings (that's how the message physically reaches your handset — it's a provider setting, not code). I'll walk you through the exact clicks when we get there, and I'll tell you precisely how to test with your own number. After that step, nothing else gets built until you confirm the code arrived and you got in.
