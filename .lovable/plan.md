@@ -1,6 +1,6 @@
 # Kabadiwala Connect — Phase 1: Collector App
 
-Build the collector app only, screen by screen as you share them. Recycler dashboard and AI classification come later.
+Build the collector app only, screen by screen as you share them. Recycler dashboard comes later.
 
 ## Technologies note
 
@@ -19,14 +19,22 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 - Greeting: "Hello, Ramesh 👋" (real name from the collector's profile).
 - "What are you collecting?" with a 2x2 grid of category cards: 📱 Mobile, 💻 Laptop, 🖥️ Monitor, 🔌 Other — tap to select.
 - "ADD E-WASTE" button at the bottom to start a new pickup with the selected category.
-- Below or beside: the collector's past requests (saved per account), so re-opening the app shows history.
+- Past requests list below, saved per account.
 
 ## Screen 3 — Take Photo (as sketched)
 
 - Header: "Identify E-Waste".
 - Large camera preview / placeholder area.
 - "TAKE PHOTO" button, plus "Or select from gallery" link.
-- For this phase the user manually confirms the category next; AI auto-detection is wired in a later phase.
+- Photo is uploaded to storage; in this phase it can be used as-is or fed to the AI in Screen 4.
+
+## Screen 4 — AI Result (as sketched)
+
+- Header: "E-Waste Identified".
+- Preview of the captured image.
+- AI-detected category (e.g. 💻 Laptop) and confidence percentage.
+- User can tap "YES" to confirm or "CHANGE" to pick/enter the correct category.
+- AI maps image → category only. Price calculation is separate and happens in the next step.
 
 ## Profile
 
@@ -39,6 +47,7 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 - Lovable Cloud: phone auth (or email fallback), profiles table, pickup requests table, row-level security so each collector only sees their own data.
 - Mobile number validated (+91, 10 digits); 6-digit OTP with expiry and resend throttling.
 - Camera works from the phone browser via the standard HTML media capture; gallery via file input. Photos are uploaded to Lovable Cloud storage.
+- AI image classification: Lovable AI Gateway call from a server function, using a vision model. Returns one of the supported categories and a confidence score.
 - Clean, trustworthy recycling-green design in the spirit of the sketch; I'll propose visual directions before building.
 
 ## Open questions
