@@ -171,10 +171,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      owns_recycler: {
-        Args: { _recycler_id: string; _user_id: string }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
