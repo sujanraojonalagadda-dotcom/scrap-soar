@@ -1,6 +1,6 @@
 # Kabadiwala Connect — Phase 1: Collector App
 
-Build the collector app end-to-end, Screens 1–8. Recycler dashboard, admin panel, smart matching, offline sync, voice, digital receipts and full history come in later phases.
+Build the collector app end-to-end, Screens 1–9. Recycler dashboard, admin panel, smart matching, offline sync, voice and full history come in later phases.
 
 ## Technologies note
 
@@ -30,20 +30,22 @@ This builder makes web applications, so Flutter, Firebase, SQLite/Drift and an o
 
 **7. Verified Recyclers** — cards with name + verified tick, rating, ₹/kg, distance, "SELECT". Selecting creates a pending pickup request.
 
-**8. Handover** — recycler name, expected weight, indicative price, a QR code for the recycler to scan, or a 6-digit OTP entry, "CONFIRM HANDOVER". Selecting a recycler creates a pending pickup request.
+**8. Handover** — recycler name, expected weight, indicative price, a QR code for the recycler to scan, or a 6-digit OTP entry, "CONFIRM HANDOVER".
+
+**9. Digital Receipt** — "✓ HANDOVER COMPLETE" with item, final weight, final price, recycler, date, transaction ID (KC-YYYY-NNNNNN), and verification ticks (recycler verified, weight confirmed, price confirmed), "VIEW RECEIPT". This becomes the traceability record.
 
 ## Data stored
 
 - **profiles** — name, phone, role, language, area, verified.
 - **recyclers** — name, location, accepted materials, indicative rates, verification status and date, rating.
 - **rates** — indicative ₹/kg per category.
-- **pickup_requests** — collector, recycler, category, weight, condition, indicative price, status (pending / accepted / completed), created_at.
+- **pickup_requests** — collector, recycler, category, weight, condition, indicative price, final price, status (pending / accepted / completed), otp_verified, qr_scanned, receipt_number, created_at, completed_at.
 
 Row-level security: a collector reads and writes only their own pickup requests; recyclers and rates are publicly readable.
 
 ## Later phases (planned, not in Phase 1)
 
-Smart Matching score (price / distance / material / verification with an overall score and recommendation), recycler dashboard, admin verification and analytics, offline capture with auto-sync, Hindi + English voice input and spoken price, digital receipts and full transaction history.
+Smart Matching score (price / distance / material / verification with an overall score and recommendation), recycler dashboard, admin verification and analytics, offline capture with auto-sync, Hindi + English voice input and spoken price, full transaction history browse/search.
 
 ## Technical notes
 
@@ -52,6 +54,7 @@ Smart Matching score (price / distance / material / verification with an overall
 - Camera via browser media capture, gallery via file input.
 - Category detection: server function calling a vision model through Lovable AI; response constrained to supported categories (laptop, mobile, monitor, television, printer, keyboard, mouse, cable, battery, other) plus a confidence score.
 - QR encodes the pickup request id; handover OTP generated and verified server-side.
+- Receipt number generated server-side on completion (KC-YYYY-NNNNNN).
 - Sample verified recyclers and rate table seeded so the demo flow works immediately.
 - Recycling-green, high-contrast, large-tap-target design suited to outdoor phone use; I'll propose visual directions before building.
 
