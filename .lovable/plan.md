@@ -111,7 +111,9 @@ Sidebar: Dashboard, Requests, Materials, Rates, History, Profile. Counts and lis
 
 Runs end to end under the GUIDED TEST MODE banner, with test records labelled as such:
 
-1. Collector logs in (real OTP). 2. Photographs a laptop. 3. AI returns its own category and its own confidence (no invented percentages shown). 4. Enters weight and condition. 5. Test calculation shows the indicative value. 6. A labelled test recycler is matched. 7. Collector selects it. 8. QR/OTP handover. 9. Recycler confirms weight and price. 10. Digital receipt with its transaction ID. 11. Dashboard counts update from those real stored records.
+1. Collector logs in (real OTP). 2. Photographs a laptop. 3. AI returns its own category and its own confidence (no invented percentages shown). 4. Enters weight and condition. 5. Test calculation shows the indicative value. 6. A labelled test recycler is matched. 7. Collector selects it. 8. QR/OTP handover. 9. Recycler confirms the weight and the final price — labelled a test price under Guided Test Mode. 10. Digital receipt with its transaction ID. 11. Dashboard counts update from those real stored records.
+
+No blockchain or immutability claims anywhere; where record integrity is implemented it is described as tamper-evident.
 
 ## Data stored
 
