@@ -142,3 +142,43 @@
     color: var(--color-foreground);
   }
 }
+
+/* Kabadiwala Connect design tokens (approved palette, exact values) */
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-light: var(--brand-light);
+  --color-info: var(--info);
+  --color-info-dark: var(--info-dark);
+  --color-info-light: var(--info-light);
+  --color-warning: var(--warning);
+}
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #111827;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
+  --primary: #16A34A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F9FAFB;
+  --secondary-foreground: #111827;
+  --muted: #F9FAFB;
+  --muted-foreground: #4B5563;
+  --accent: #DCFCE7;
+  --accent-foreground: #166534;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #16A34A;
+  --brand: #16A34A;
+  --brand-dark: #166534;
+  --brand-light: #DCFCE7;
+  --info: #2563EB;
+  --info-dark: #1E3A8A;
+  --info-light: #DBEAFE;
+  --warning: #F59E0B;
+}
