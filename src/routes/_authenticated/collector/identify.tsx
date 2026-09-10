@@ -83,14 +83,14 @@ function IdentifyPage() {
           type="file"
           accept="image/*"
           capture="environment"
-          className="hidden"
+          className="sr-only"
           onChange={(e) => onFile(e.target.files?.[0])}
         />
         <input
           ref={galleryRef}
           type="file"
           accept="image/*"
-          className="hidden"
+          className="sr-only"
           onChange={(e) => onFile(e.target.files?.[0])}
         />
 
