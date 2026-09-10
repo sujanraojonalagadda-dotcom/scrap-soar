@@ -94,7 +94,7 @@ Your Flutter/TensorFlow Lite training pipeline maps onto the same contract here 
 ```
 
 - Online/offline indicator; pickups and photos captured offline upload automatically on reconnect.
-- Rates and recycler list cached, still labelled honestly when unverified.
+- Caching stores only records that actually exist; no fallback or sample records are ever created automatically. With nothing cached, the honest empty state shows.
 - Voice: 🎤 "Laptop 3 kilo hai" → speech-to-text → fills category and weight, correctable.
 - Speaks back: if a real calculated price exists, the actual amount (e.g. "Aapka estimated price ₹420 hai"); otherwise "Price information is currently unavailable." Hindi and English first.
 
