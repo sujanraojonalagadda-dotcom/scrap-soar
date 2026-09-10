@@ -68,6 +68,14 @@ Simple admin console:
 - **Transactions** — monitor all transactions by status, recycler, collector, date.
 - **Analytics** — total e-waste collected, formal channelization metric, active collectors count, active recyclers count.
 
+## Phase 4 — AI image classification (only after the basic app works)
+
+Ten categories: Laptop, Mobile, Monitor, Television, Printer, Keyboard, Mouse, Cable, Battery, Other.
+
+Flow: camera → image preprocessing (resize/clean) → model → category + confidence → user confirms (Screen 4).
+
+Your training pipeline (collect → clean/resize → label → train → test → export TensorFlow Lite → embed in the app) targets an on-device Flutter model. In this web build the same contract is served by a vision model called through Lovable AI from a server function, returning one of the ten categories plus a confidence score. If you later train your own model, it can be swapped in behind the same call without touching any screen.
+
 ## Later phases
 
 Smart Matching score (price / distance / material / verification with an overall score and recommendation), offline capture with auto-sync, Hindi + English voice input and spoken price, full transaction history browse/search.
