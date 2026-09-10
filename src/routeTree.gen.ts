@@ -19,6 +19,7 @@ import { Route as AuthenticatedCollectorRegisterRouteImport } from './routes/_au
 import { Route as AuthenticatedRecyclerHomeRouteImport } from './routes/_authenticated/recycler/home'
 import { Route as AuthenticatedRecyclerRegisterRouteImport } from './routes/_authenticated/recycler/register'
 import { Route as AuthenticatedRecyclerRequestsRouteImport } from './routes/_authenticated/recycler/requests'
+import { Route as AuthenticatedRecyclerRequestIdRouteImport } from './routes/_authenticated/recycler/request.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -77,6 +78,12 @@ const AuthenticatedRecyclerRequestsRoute =
     path: '/recycler/requests',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRecyclerRequestIdRoute =
+  AuthenticatedRecyclerRequestIdRouteImport.update({
+    id: '/recycler/request/$id',
+    path: '/recycler/request/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/recycler/home': typeof AuthenticatedRecyclerHomeRoute
   '/recycler/register': typeof AuthenticatedRecyclerRegisterRoute
   '/recycler/requests': typeof AuthenticatedRecyclerRequestsRoute
+  '/recycler/request/$id': typeof AuthenticatedRecyclerRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,6 +107,7 @@ export interface FileRoutesByTo {
   '/recycler/home': typeof AuthenticatedRecyclerHomeRoute
   '/recycler/register': typeof AuthenticatedRecyclerRegisterRoute
   '/recycler/requests': typeof AuthenticatedRecyclerRequestsRoute
+  '/recycler/request/$id': typeof AuthenticatedRecyclerRequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -112,6 +121,7 @@ export interface FileRoutesById {
   '/_authenticated/recycler/home': typeof AuthenticatedRecyclerHomeRoute
   '/_authenticated/recycler/register': typeof AuthenticatedRecyclerRegisterRoute
   '/_authenticated/recycler/requests': typeof AuthenticatedRecyclerRequestsRoute
+  '/_authenticated/recycler/request/$id': typeof AuthenticatedRecyclerRequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
     | '/recycler/home'
     | '/recycler/register'
     | '/recycler/requests'
+    | '/recycler/request/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/recycler/home'
     | '/recycler/register'
     | '/recycler/requests'
+    | '/recycler/request/$id'
   id:
     | '__root__'
     | '/'
@@ -148,6 +160,7 @@ export interface FileRouteTypes {
     | '/_authenticated/recycler/home'
     | '/_authenticated/recycler/register'
     | '/_authenticated/recycler/requests'
+    | '/_authenticated/recycler/request/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -227,6 +240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRecyclerRequestsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/recycler/request/$id': {
+      id: '/_authenticated/recycler/request/$id'
+      path: '/recycler/request/$id'
+      fullPath: '/recycler/request/$id'
+      preLoaderRoute: typeof AuthenticatedRecyclerRequestIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -239,6 +259,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRecyclerHomeRoute: typeof AuthenticatedRecyclerHomeRoute
   AuthenticatedRecyclerRegisterRoute: typeof AuthenticatedRecyclerRegisterRoute
   AuthenticatedRecyclerRequestsRoute: typeof AuthenticatedRecyclerRequestsRoute
+  AuthenticatedRecyclerRequestIdRoute: typeof AuthenticatedRecyclerRequestIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -250,6 +271,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRecyclerHomeRoute: AuthenticatedRecyclerHomeRoute,
   AuthenticatedRecyclerRegisterRoute: AuthenticatedRecyclerRegisterRoute,
   AuthenticatedRecyclerRequestsRoute: AuthenticatedRecyclerRequestsRoute,
+  AuthenticatedRecyclerRequestIdRoute: AuthenticatedRecyclerRequestIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
