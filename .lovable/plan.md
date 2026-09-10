@@ -17,12 +17,20 @@ This builder makes web applications, so Flutter, Firebase, SQLite/Drift and an o
 
 ## Build order
 
-### Phase 1 — Basic application
+### Phase 1 — Basic application, with REAL mobile OTP
 
-- Login: ♻ KABADIWALA CONNECT branding, +91 mobile number field, "SEND OTP", then a 6-digit OTP step with Verify and Resend.
-- Registration / first-time profile: name, area.
+Real SMS OTP only. No demo code, no code shown or hinted at anywhere in the app, no mock sign-in.
+
+- Login: ♻ KABADIWALA CONNECT branding, +91 mobile number field, "SEND OTP" → a real SMS arrives on the phone → 6-digit OTP entry with Verify and Resend.
+- Every state handled: loading, OTP sent, verifying, success, wrong OTP, too many attempts, invalid number, no network.
+- New number → collector registration (name, preferred language, location). Existing number → straight to Collector Home.
+- Collector profile saved with user id, name, phone, preferred language, location, created date.
+- Protected pages: home, add e-waste, history, profile — a signed-out visitor is sent back to login.
+- Logout.
+- Auth logic kept in one place, credentials in environment settings, never written into source files.
 - Collector Home: "Hello, Ramesh 👋", "What are you collecting?" with a 2x2 category grid (📱 Mobile, 💻 Laptop, 🖥️ Monitor, 🔌 Other), "ADD E-WASTE" button, recent pickups below.
 - Navigation between screens.
+- Nothing else gets built until you have signed in with your own phone number and it worked.
 
 ### Phase 2 — Core transaction
 
