@@ -46,9 +46,22 @@ Mapped from your Firestore sketch to Lovable Cloud (Postgres) tables:
 
 Row-level security: a collector reads and writes only their own transactions and collector profile; recyclers are publicly readable.
 
-## Later phases (planned, not in Phase 1)
+## Phase 2 — Recycler Dashboard (desktop web)
 
-Smart Matching score (price / distance / material / verification with an overall score and recommendation), recycler dashboard, admin verification and analytics, offline capture with auto-sync, Hindi + English voice input and spoken price, full transaction history browse/search.
+Sidebar layout: Dashboard, Requests, Materials, Rates, History, Profile.
+
+- **Dashboard** — today's requests count, pending count, completed count, and a "Collection Requests" list showing category, weight and indicative price (e.g. Laptop 3.5kg ₹420).
+- **Requests** — full queue with Accept / Reject; then Confirm weight and price, Handover (scan the collector's QR or issue the OTP), and Complete.
+- **Materials** — which e-waste categories this recycler accepts.
+- **Rates** — editable indicative ₹/kg per category; feeds the collector price estimate.
+- **History** — completed transactions with receipts.
+- **Profile** — name, location, verification status.
+
+Status flow on a transaction: pending → accepted → confirmed → completed (or rejected/cancelled). Only the assigned recycler can act on a request.
+
+## Later phases
+
+Smart Matching score (price / distance / material / verification with an overall score and recommendation), admin verification and analytics, offline capture with auto-sync, Hindi + English voice input and spoken price, full transaction history browse/search.
 
 ## Technical notes
 
