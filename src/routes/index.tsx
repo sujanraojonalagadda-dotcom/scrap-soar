@@ -72,7 +72,7 @@ function LoginPage() {
     }
     setPhone(result.phone);
     setStage("code");
-    setNotice(`We sent a code by SMS to ${result.phone}. It is never shown in this app.`);
+    setNotice(`Enter the 6-digit verification code for ${result.phone}.`);
   }
 
   async function handleVerify(e: React.FormEvent) {
@@ -93,7 +93,7 @@ function LoginPage() {
     setBusy(true);
     const result = await sendOtp(phone);
     setBusy(false);
-    setNotice(result.ok ? "A new code has been sent." : null);
+    setNotice(result.ok ? "You can enter your verification code now." : null);
     if (!result.ok) setError(result.message);
   }
 
@@ -144,14 +144,14 @@ function LoginPage() {
               SEND OTP
             </button>
             <p className="text-center text-xs text-muted-foreground">
-              A real one-time code is sent by SMS to your phone.
+              A 6-digit verification code is required to continue.
             </p>
           </form>
         ) : (
           <form onSubmit={handleVerify} className="space-y-4">
             <div>
               <label htmlFor="code" className="mb-1.5 block text-sm font-medium text-foreground">
-                Enter the code sent to {phone}
+                Enter the code for {phone}
               </label>
               <input
                 id="code"
