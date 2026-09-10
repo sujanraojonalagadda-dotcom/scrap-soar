@@ -76,9 +76,37 @@ Flow: camera → image preprocessing (resize/clean) → model → category + con
 
 Your training pipeline (collect → clean/resize → label → train → test → export TensorFlow Lite → embed in the app) targets an on-device Flutter model. In this web build the same contract is served by a vision model called through Lovable AI from a server function, returning one of the ten categories plus a confidence score. If you later train your own model, it can be swapped in behind the same call without touching any screen.
 
+## Phase 5 — Offline mode
+
+The collector app keeps working with no internet.
+
+```text
+            INTERNET?
+        ┌───────┴───────┐
+       YES              NO
+        │               │
+     Cloud DB      Local device store
+        │          (pickup + photo queued)
+        └───────┬───────┘
+                ↓
+        connection returns
+                ↓
+            AUTO SYNC
+                ↓
+             Cloud DB
+```
+
+- Online/offline indicator in the app header.
+- Pickups captured offline (category, photo, weight, condition, price estimate) are saved on the device.
+- When the connection returns, queued records and photos upload automatically and the collector sees a "synced" confirmation.
+- Recycler list and rates are cached so price estimates still work offline.
+- Conflicts resolved by keeping the device record and assigning the transaction id/receipt number at sync time.
+
+Instead of the SQLite/Drift store from your Flutter spec, the web app uses the browser's on-device storage (IndexedDB) with a service worker, which plays the same role.
+
 ## Later phases
 
-Smart Matching score (price / distance / material / verification with an overall score and recommendation), offline capture with auto-sync, Hindi + English voice input and spoken price, full transaction history browse/search.
+Smart Matching score (price / distance / material / verification with an overall score and recommendation), Hindi + English voice input and spoken price, full transaction history browse/search.
 
 ## Technical notes
 
