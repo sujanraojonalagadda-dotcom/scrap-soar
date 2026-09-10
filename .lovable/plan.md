@@ -36,6 +36,14 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 - User can tap "YES" to confirm or "CHANGE" to pick/enter the correct category.
 - AI maps image → category only. Price calculation is separate and happens in the next step.
 
+## Screen 5 — Weight & Condition (as sketched)
+
+- Header: "E-Waste Details".
+- Read-only category from Screen 4.
+- Weight input with "kg" suffix (numeric).
+- Condition radio group: Working, Partially Working, Not Working.
+- "CONTINUE" button.
+
 ## Profile
 
 - First-time collectors complete a short profile: name, area/pincode.
