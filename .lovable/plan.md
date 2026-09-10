@@ -58,6 +58,12 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 - Cards showing recyclers: name, verified badge, rating, rate per kg, distance, "SELECT" button.
 - Selecting a recycler creates a pickup request in "pending" status.
 
+## Screen 8 — Smart Matching (future)
+
+- Later phase: score each recycler on Price, Distance, Material accepted, Verification.
+- Show bar scores and an overall score, then recommend the best match.
+- Phase 1 keeps the simple list from Screen 7 but stores enough recycler data (rates, accepted categories, location, verified status) so scoring can be layered in later.
+
 ## Profile
 
 - First-time collectors complete a short profile: name, area/pincode.
@@ -71,7 +77,7 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 - Camera via phone browser media capture; gallery via file input. Photos uploaded to Lovable Cloud storage.
 - AI image classification: Lovable AI Gateway call from a server function, using a vision model. Returns category + confidence.
 - Price engine: per-category rate in Cloud table; condition applies a multiplier. No market-price AI prediction.
-- Verified recyclers stored in a backend table; for Phase 1 seeded with sample data.
+- Recyclers stored in backend table, seeded with sample data. Fields include accepted categories, rate, lat/lng or distance and verification status so Smart Matching can be added later.
 - Clean, trustworthy recycling-green design in the spirit of the sketch; I'll propose visual directions before building.
 
 ## Open questions
