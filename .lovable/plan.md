@@ -85,6 +85,24 @@ Sidebar: Dashboard, Requests, Materials, Rates, History, Profile.
 - Admin: view/verify collectors; verify recycler authorization and set verification date; monitor transactions; analytics (total e-waste, formal channelization, active collectors, active recyclers).
 - Bug fixing, UI polish, demo data, deployment, prototype URL and QR code.
 
+## The demo it has to deliver
+
+Everything above exists to make this one walkthrough run live, with no code talk:
+
+1. Collector logs in.
+2. Takes a photo of a laptop.
+3. AI: 💻 Laptop — 94% confidence.
+4. Collector enters 3.5 kg, Not working.
+5. App shows indicative value ₹420.
+6. App recommends Verified Recycler A — ₹120/kg — 5.2 km.
+7. Collector selects the recycler.
+8. QR / OTP handover.
+9. Recycler confirms 3.4 kg, ₹408.
+10. Digital receipt KC-2026-000124.
+11. Dashboard updates: E-waste formally channelized ✓.
+
+Demo data is seeded so every step works on stage. Step 6 wording ("recommends") means the Smart Matching score below is worth having ready for the demo, even if it starts as a simple best-match pick.
+
 ## Data stored
 
 Mapped from your Firestore sketch to Lovable Cloud (Postgres) tables:
