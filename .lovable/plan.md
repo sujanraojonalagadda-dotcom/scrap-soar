@@ -1,38 +1,39 @@
 # Kabadiwala Connect — Phase 1: Collector App
 
-Build the collector app only. The recycler dashboard, AI image classification and the rest of the earlier flow come later.
+Build the collector app only, screen by screen as you share them. Recycler dashboard and AI classification come later.
 
 ## Technologies note
 
-This builder makes web applications, so Flutter and Firebase aren't possible here. The collector app is built as a mobile-first web app (looks and works like an app on a phone) with Lovable Cloud providing login, database and storage. For login with mobile number, see "Login" below.
+This builder makes web applications, so Flutter and Firebase aren't possible here. The collector app is a mobile-first web app (looks and works like an app on a phone) with Lovable Cloud providing login, database and storage.
 
-## Login — Screen 1 (as sketched)
+## Screen 1 — Login (as sketched)
 
 - Branded screen: ♻ KABADIWALA CONNECT.
-- Single field: mobile number with +91 prefix.
-- "Send OTP" button, then a second step with a 6-digit OTP box and "Verify" + "Resend".
+- Mobile number field with +91 prefix, "Send OTP" button.
+- Second step: 6-digit OTP box, "Verify" and "Resend".
 
-Two ways to power the OTP:
+Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs a messaging provider (e.g. Twilio) tied to your account. If that's not available, email login is a drop-in swap — see the open question below.
 
-1. **Email/password instead (no SMS cost)** — simplest and free, but doesn't match the sketch.
-2. **Phone OTP via Lovable Cloud phone sign-in** — matches the sketch; SMS sending needs a messaging provider (Twilio/MessageBird) configured, which involves cost and your own provider account.
+## Screen 2 — Collector Home (as sketched)
 
-I'll plan for option 2 (phone OTP) since it matches your design. If SMS setup turns out to be unavailable or you change your mind, option 1 is a drop-in swap and takes minutes.
+- Greeting: "Hello, Ramesh 👋" (real name from the collector's profile).
+- "What are you collecting?" with a 2x2 grid of category cards: 📱 Mobile, 💻 Laptop, 🖥️ Monitor, 🔌 Other — tap to select.
+- "ADD E-WASTE" button at the bottom to start a new pickup with the selected category.
+- Below or beside: the collector's past requests (saved per account), so re-opening the app shows history.
 
-## After login
+## Profile
 
-- First-time collectors create a profile: name, area/pincode.
-- Home screen: "New Pickup" button and a list of past requests (saved per account).
-- Everything else from the original flow (photo upload, weight, price, recycler matching, QR/OTP handover, receipts) is deferred to later phases.
+- First-time collectors complete a short profile: name, area/pincode.
+- Role is stored as "collector" server-side, separate from login credentials.
 
 ## Technical notes
 
-- TanStack Start, React, TypeScript, Tailwind; mobile-first layout sized like your sketch.
-- Lovable Cloud: phone auth, a profiles table (name, area, role=collector), row-level security so each collector sees only their own data.
-- Mobile number validated (+91, 10 digits); OTP is 6 digits with expiry and resend throttling.
-- Clean, trustworthy design in the spirit of the sketch (recycling green); I'll propose visual directions before building.
+- TanStack Start, React, TypeScript, Tailwind; mobile-first layout matching your sketches (centred phone-width card on desktop).
+- Lovable Cloud: phone auth (or email fallback), profiles table, pickup requests table, row-level security so each collector only sees their own data.
+- Mobile number validated (+91, 10 digits); 6-digit OTP with expiry and resend throttling.
+- Clean, trustworthy recycling-green design in the spirit of the sketch; I'll propose visual directions before building.
 
 ## Open questions
 
-1. Phone OTP needs an SMS provider account (e.g. Twilio) — do you have one, or should we start with email login for now and add phone OTP later?
-2. OK that AI photo classification is postponed to a later phase?
+1. Phone OTP needs an SMS provider account (e.g. Twilio) — do you have one, or start with email login and add phone OTP later?
+2. Keep sharing screen sketches as you make them — I'll fold each into the plan.
