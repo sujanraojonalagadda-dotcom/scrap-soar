@@ -63,34 +63,57 @@ function classify(rawMessage: string, status?: number): AuthFailure {
   return { ok: false, code: "unknown", message: rawMessage || "Something went wrong. Please try again." };
 }
 
-/** Requests a real SMS one-time code for the given mobile number. */
+/**
+ * Demo sign-in code. SMS delivery is not configured for this project, so the
+ * app accepts this fixed code and creates a normal backend session for the
+ * number entered.
+ */
+const DEMO_CODE = "123456";
+
+function accountFor(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  return {
+    email: `kc${digits}@kabadiwala.demo`,
+    password: `kc-demo-${digits}`,
+  };
+}
+
+/** Starts sign-in for the given mobile number. */
 export async function sendOtp(rawPhone: string): Promise<AuthResult<{ phone: string }>> {
   const phone = normalisePhone(rawPhone);
   if (!phone) {
     return { ok: false, code: "invalid_phone", message: "Enter a valid 10-digit Indian mobile number." };
   }
-  try {
-    const { error } = await supabase.auth.signInWithOtp({ phone });
-    if (error) return classify(error.message, error.status);
-    return { ok: true, phone };
-  } catch (err) {
-    return classify(err instanceof Error ? err.message : "network");
-  }
+  return { ok: true, phone };
 }
 
-/** Verifies the code the collector received by SMS. */
+/** Verifies the code entered by the collector. */
 export async function verifyOtp(phone: string, code: string): Promise<AuthResult<{ session: Session; user: User }>> {
   const token = code.replace(/\D/g, "");
-  if (token.length < 4) {
-    return { ok: false, code: "invalid_otp", message: "Enter the code you received by SMS." };
+  if (token !== DEMO_CODE) {
+    return { ok: false, code: "invalid_otp", message: "That code is not correct. Please check and try again." };
   }
+  const { email, password } = accountFor(phone);
   try {
-    const { data, error } = await supabase.auth.verifyOtp({ phone, token, type: "sms" });
-    if (error) return classify(error.message, error.status);
-    if (!data.session || !data.user) {
+    const existing = await supabase.auth.signInWithPassword({ email, password });
+    if (existing.data.session && existing.data.user) {
+      return { ok: true, session: existing.data.session, user: existing.data.user };
+    }
+    const created = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { phone } },
+    });
+    if (created.error) return classify(created.error.message, created.error.status);
+    if (created.data.session && created.data.user) {
+      return { ok: true, session: created.data.session, user: created.data.user };
+    }
+    const retry = await supabase.auth.signInWithPassword({ email, password });
+    if (retry.error) return classify(retry.error.message, retry.error.status);
+    if (!retry.data.session || !retry.data.user) {
       return { ok: false, code: "unknown", message: "Sign-in did not complete. Please try again." };
     }
-    return { ok: true, session: data.session, user: data.user };
+    return { ok: true, session: retry.data.session, user: retry.data.user };
   } catch (err) {
     return classify(err instanceof Error ? err.message : "network");
   }
