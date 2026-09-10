@@ -28,6 +28,7 @@ export interface NewProfileInput {
   phone: string | null;
   language: string;
   location: string | null;
+  role?: "collector" | "recycler";
 }
 
 export async function createProfile(input: NewProfileInput): Promise<CollectorProfile> {
@@ -39,7 +40,7 @@ export async function createProfile(input: NewProfileInput): Promise<CollectorPr
       phone: input.phone,
       language: input.language,
       location: input.location,
-      role: "collector",
+      role: input.role ?? "collector",
     })
     .select()
     .single();

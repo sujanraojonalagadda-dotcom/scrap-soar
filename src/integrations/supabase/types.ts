@@ -53,6 +53,119 @@ export type Database = {
         }
         Relationships: []
       }
+      recyclers: {
+        Row: {
+          created_at: string
+          id: string
+          location: string | null
+          materials: string[]
+          name: string
+          rate_per_kg: number | null
+          updated_at: string
+          user_id: string
+          verification_date: string | null
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location?: string | null
+          materials?: string[]
+          name: string
+          rate_per_kg?: number | null
+          updated_at?: string
+          user_id: string
+          verification_date?: string | null
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location?: string | null
+          materials?: string[]
+          name?: string
+          rate_per_kg?: number | null
+          updated_at?: string
+          user_id?: string
+          verification_date?: string | null
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          category: string
+          collector_id: string
+          condition: string
+          created_at: string
+          final_price: number | null
+          final_weight_kg: number | null
+          handover_code: string | null
+          id: string
+          indicative_price: number | null
+          otp_verified: boolean
+          paid_at: string | null
+          payment_method: string | null
+          payment_reference: string | null
+          payment_status: string
+          receipt_number: string
+          recycler_id: string | null
+          status: string
+          updated_at: string
+          weight_kg: number
+        }
+        Insert: {
+          category: string
+          collector_id: string
+          condition: string
+          created_at?: string
+          final_price?: number | null
+          final_weight_kg?: number | null
+          handover_code?: string | null
+          id?: string
+          indicative_price?: number | null
+          otp_verified?: boolean
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string
+          receipt_number?: string
+          recycler_id?: string | null
+          status?: string
+          updated_at?: string
+          weight_kg: number
+        }
+        Update: {
+          category?: string
+          collector_id?: string
+          condition?: string
+          created_at?: string
+          final_price?: number | null
+          final_weight_kg?: number | null
+          handover_code?: string | null
+          id?: string
+          indicative_price?: number | null
+          otp_verified?: boolean
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string
+          receipt_number?: string
+          recycler_id?: string | null
+          status?: string
+          updated_at?: string
+          weight_kg?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_recycler_id_fkey"
+            columns: ["recycler_id"]
+            isOneToOne: false
+            referencedRelation: "recyclers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
