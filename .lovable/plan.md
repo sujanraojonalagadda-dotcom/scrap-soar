@@ -36,12 +36,15 @@ This builder makes web applications, so Flutter, Firebase, SQLite/Drift and an o
 
 ## Data stored
 
-- **profiles** — name, phone, role, language, area, verified.
-- **recyclers** — name, location, accepted materials, indicative rates, verification status and date, rating.
-- **rates** — indicative ₹/kg per category.
-- **pickup_requests** — collector, recycler, category, weight, condition, indicative price, final price, status (pending / accepted / completed), otp_verified, qr_scanned, receipt_number, created_at, completed_at.
+Mapped from your Firestore sketch to Lovable Cloud (Postgres) tables:
 
-Row-level security: a collector reads and writes only their own pickup requests; recyclers and rates are publicly readable.
+- **users** — managed by Lovable Cloud auth (phone, email, etc.).
+- **profiles** — user_id, name, phone, role (collector / recycler / admin), language, location, verified.
+- **collectors** — collector_id (links to user), name, phone, location, verified.
+- **recyclers** — recycler_id, name, location, materials (array of accepted categories), indicative_rates (per category), verification_status, verification_date, rating.
+- **transactions** — transaction_id, collector_id, recycler_id, category, weight, condition, indicative_price, final_price, otp_verified, qr_scanned, status (pending / accepted / completed / cancelled), timestamp, receipt_number, completed_at.
+
+Row-level security: a collector reads and writes only their own transactions and collector profile; recyclers are publicly readable.
 
 ## Later phases (planned, not in Phase 1)
 
