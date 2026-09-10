@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedCollectorAddEwasteRouteImport } from './routes/_authenticated/collector/add-ewaste'
 import { Route as AuthenticatedCollectorHomeRouteImport } from './routes/_authenticated/collector/home'
 import { Route as AuthenticatedCollectorRegisterRouteImport } from './routes/_authenticated/collector/register'
 
@@ -23,6 +24,12 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCollectorAddEwasteRoute =
+  AuthenticatedCollectorAddEwasteRouteImport.update({
+    id: '/collector/add-ewaste',
+    path: '/collector/add-ewaste',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCollectorHomeRoute =
   AuthenticatedCollectorHomeRouteImport.update({
     id: '/collector/home',
@@ -38,11 +45,13 @@ const AuthenticatedCollectorRegisterRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/collector/add-ewaste': typeof AuthenticatedCollectorAddEwasteRoute
   '/collector/home': typeof AuthenticatedCollectorHomeRoute
   '/collector/register': typeof AuthenticatedCollectorRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/collector/add-ewaste': typeof AuthenticatedCollectorAddEwasteRoute
   '/collector/home': typeof AuthenticatedCollectorHomeRoute
   '/collector/register': typeof AuthenticatedCollectorRegisterRoute
 }
@@ -50,18 +59,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/collector/add-ewaste': typeof AuthenticatedCollectorAddEwasteRoute
   '/_authenticated/collector/home': typeof AuthenticatedCollectorHomeRoute
   '/_authenticated/collector/register': typeof AuthenticatedCollectorRegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/collector/home' | '/collector/register'
+  fullPaths:
+    '/' | '/collector/add-ewaste' | '/collector/home' | '/collector/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/collector/home' | '/collector/register'
+  to: '/' | '/collector/add-ewaste' | '/collector/home' | '/collector/register'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/_authenticated/collector/add-ewaste'
     | '/_authenticated/collector/home'
     | '/_authenticated/collector/register'
   fileRoutesById: FileRoutesById
@@ -87,6 +99,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/collector/add-ewaste': {
+      id: '/_authenticated/collector/add-ewaste'
+      path: '/collector/add-ewaste'
+      fullPath: '/collector/add-ewaste'
+      preLoaderRoute: typeof AuthenticatedCollectorAddEwasteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/collector/home': {
       id: '/_authenticated/collector/home'
       path: '/collector/home'
@@ -105,11 +124,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCollectorAddEwasteRoute: typeof AuthenticatedCollectorAddEwasteRoute
   AuthenticatedCollectorHomeRoute: typeof AuthenticatedCollectorHomeRoute
   AuthenticatedCollectorRegisterRoute: typeof AuthenticatedCollectorRegisterRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCollectorAddEwasteRoute: AuthenticatedCollectorAddEwasteRoute,
   AuthenticatedCollectorHomeRoute: AuthenticatedCollectorHomeRoute,
   AuthenticatedCollectorRegisterRoute: AuthenticatedCollectorRegisterRoute,
 }
