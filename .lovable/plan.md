@@ -1,86 +1,64 @@
-# Kabadiwala Connect — Phase 1: Collector App
+# Kabadiwala Connect — Collector App (Phase 1)
 
-Build the collector app only, screen by screen as you share them.
+Build the collector app end-to-end, Screens 1–10. Recycler dashboard, admin panel, smart matching, offline sync and voice come in later phases.
 
 ## Technologies note
 
-This builder makes web applications, so Flutter and Firebase aren't possible here. The collector app is a mobile-first web app (looks and works like an app on a phone) with Lovable Cloud providing login, database and storage.
+This builder makes web applications, so Flutter, Firebase, SQLite/Drift and an on-device TensorFlow Lite model aren't possible here. Equivalents used:
 
-## Screen 1 — Login (as sketched)
+| Spec | Built as |
+| --- | --- |
+| Flutter app | Mobile-first web app (works like an app on a phone) |
+| Firebase Auth / Firestore / Storage / Hosting | Lovable Cloud + Lovable publishing |
+| TensorFlow Lite on device | Vision AI category detection via Lovable AI |
+| SQLite offline + auto sync | Later phase: browser offline storage with sync on reconnect |
+| Speech-to-Text / Text-to-Speech | Later phase: browser voice input and spoken price |
 
-- Branded screen: ♻ KABADIWALA CONNECT.
-- Mobile number field with +91 prefix, "Send OTP" button.
-- Second step: 6-digit OTP box, "Verify" and "Resend".
+## Screens
 
-Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs a messaging provider (e.g. Twilio) tied to your account. If that's not available, email login is a drop-in swap — see the open question below.
+**1. Login** — ♻ KABADIWALA CONNECT branding, +91 mobile number field, "SEND OTP", then a 6-digit OTP step with Verify and Resend.
 
-## Screen 2 — Collector Home (as sketched)
+**2. Collector Home** — "Hello, Ramesh 👋", "What are you collecting?" with a 2x2 category grid (📱 Mobile, 💻 Laptop, 🖥️ Monitor, 🔌 Other), "ADD E-WASTE" button, and recent pickups below.
 
-- Greeting: "Hello, Ramesh 👋" (real name from the collector's profile).
-- "What are you collecting?" with a 2x2 grid of category cards: 📱 Mobile, 💻 Laptop, 🖥️ Monitor, 🔌 Other — tap to select.
-- "ADD E-WASTE" button at the bottom to start a new pickup with the selected category.
-- Past requests list below, saved per account.
+**3. Take Photo** — "Identify E-Waste", camera area, "TAKE PHOTO" and "Or select from gallery".
 
-## Screen 3 — Take Photo (as sketched)
+**4. AI Result** — "E-Waste Identified", photo preview, detected category with confidence %, "YES" / "CHANGE". AI returns category only, never price.
 
-- Header: "Identify E-Waste".
-- Large camera preview / placeholder area.
-- "TAKE PHOTO" button, plus "Or select from gallery" link.
-- Photo is uploaded to storage.
+**5. Weight & Condition** — "E-Waste Details", category shown, weight in kg, condition radio (Working / Partially Working / Not Working), "CONTINUE".
 
-## Screen 4 — AI Result (as sketched)
+**6. Price Estimate** — summary of category, weight, condition; indicative value = weight × category rate, adjusted by condition; note "*Final price confirmed during handover"; "FIND RECYCLERS".
 
-- Header: "E-Waste Identified".
-- Preview of the captured image.
-- AI-detected category (e.g. 💻 Laptop) and confidence percentage.
-- User can tap "YES" to confirm or "CHANGE" to pick/enter the correct category.
-- AI maps image → category only. Price calculation is separate.
+**7. Verified Recyclers** — cards with name + verified tick, rating, ₹/kg, distance, "SELECT". Selecting creates a pending pickup request.
 
-## Screen 5 — Weight & Condition (as sketched)
+**8. Handover** — recycler name, expected weight, indicative price, a QR code for the recycler to scan, or a 6-digit OTP entry, "CONFIRM HANDOVER".
 
-- Header: "E-Waste Details".
-- Read-only category from Screen 4.
-- Weight input with "kg" suffix (numeric).
-- Condition radio group: Working, Partially Working, Not Working.
-- "CONTINUE" button.
+**9. Digital Receipt** — "✓ HANDOVER COMPLETE" with item, final weight, final price, recycler, date, transaction ID (KC-YYYY-NNNNNN), and the verified/weight/price confirmation ticks, "VIEW RECEIPT".
 
-## Screen 6 — Price Estimate (as sketched)
+**10. History** — list of past transactions with receipts, reachable from Home.
 
-- Header: "PRICE ESTIMATE".
-- Summary of inputs: category, weight, condition.
-- Indicative value computed from weight × recycler rate for that category, adjusted by condition.
-- Subtext: "*Final price confirmed during handover".
-- "FIND RECYCLERS" button.
+## Data stored
 
-## Screen 7 — Verified Recyclers (as sketched)
+- **profiles** — name, phone, role, language, area, verified.
+- **recyclers** — name, location, accepted materials, indicative rates, verification status and date, rating.
+- **rates** — indicative ₹/kg per category.
+- **transactions** — collector, recycler, category, weight, condition, indicative price, final price, OTP verified, status, timestamp, receipt number.
 
-- Header: "VERIFIED RECYCLERS ♻️".
-- Cards showing recyclers: name, verified badge, rating, rate per kg, distance, "SELECT" button.
-- Selecting a recycler creates a pickup request in "pending" status.
+Row-level security: a collector reads and writes only their own transactions; recyclers and rates are publicly readable.
 
-## Screen 8 — Smart Matching (future)
+## Later phases (planned, not in Phase 1)
 
-- Later phase: score each recycler on Price, Distance, Material accepted, Verification.
-- Show bar scores and an overall score, then recommend the best match.
-- Phase 1 keeps the simple list from Screen 7 but stores enough recycler data (rates, accepted categories, location, verified status) so scoring can be layered in later.
-
-## Profile
-
-- First-time collectors complete a short profile: name, area/pincode.
-- Role is stored as "collector" server-side, separate from login credentials.
+Smart Matching score (price / distance / material / verification with an overall score and recommendation), recycler dashboard, admin verification and analytics, offline capture with auto-sync, Hindi + English voice input and spoken price.
 
 ## Technical notes
 
-- TanStack Start, React, TypeScript, Tailwind; mobile-first layout matching your sketches (centred phone-width card on desktop).
-- Lovable Cloud: phone auth (or email fallback), profiles table, pickup requests table, category rate table, recyclers table, row-level security so each collector only sees their own data.
-- Mobile number validated (+91, 10 digits); 6-digit OTP with expiry and resend throttling.
-- Camera via phone browser media capture; gallery via file input. Photos uploaded to Lovable Cloud storage.
-- AI image classification: Lovable AI Gateway call from a server function, using a vision model. Returns category + confidence.
-- Price engine: per-category rate in Cloud table; condition applies a multiplier. No market-price AI prediction.
-- Recyclers stored in backend table, seeded with sample data. Fields include accepted categories, rate, lat/lng or distance and verification status so Smart Matching can be added later.
-- Clean, trustworthy recycling-green design in the spirit of the sketch; I'll propose visual directions before building.
+- TanStack Start, React, TypeScript, Tailwind; phone-width layout centred on desktop.
+- Lovable Cloud for auth, Postgres tables above, and a storage bucket for photos.
+- Camera via browser media capture, gallery via file input.
+- Category detection: server function calling a vision model through Lovable AI; response constrained to the ten categories in the spec (laptop, mobile, monitor, television, printer, keyboard, mouse, cable, battery, other) plus a confidence score.
+- OTP for handover generated and verified server-side; QR encodes the transaction id.
+- Sample verified recyclers and rate table seeded so the demo flow works immediately.
+- Recycling-green, high-contrast, large-tap-target design suited to outdoor phone use; I'll propose visual directions before building.
 
-## Open questions
+## Open question
 
-1. Phone OTP needs an SMS provider account (e.g. Twilio) — do you have one, or start with email login and add phone OTP later?
-2. Keep sharing screen sketches as you make them — I'll fold each into the plan.
+Login by mobile OTP needs an SMS provider account (e.g. Twilio) connected to the project. If you don't have one yet, I'll build the same screen with a demo OTP flow for now and swap in real SMS when the provider is ready — tell me which you prefer.
