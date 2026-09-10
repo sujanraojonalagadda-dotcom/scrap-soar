@@ -34,7 +34,7 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 - Preview of the captured image.
 - AI-detected category (e.g. 💻 Laptop) and confidence percentage.
 - User can tap "YES" to confirm or "CHANGE" to pick/enter the correct category.
-- AI maps image → category only. Price calculation is separate and happens in the next step.
+- AI maps image → category only. Price calculation is separate and happens in a later step.
 
 ## Screen 5 — Weight & Condition (as sketched)
 
@@ -44,6 +44,15 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 - Condition radio group: Working, Partially Working, Not Working.
 - "CONTINUE" button.
 
+## Screen 6 — Price Estimate (as sketched)
+
+- Header: "PRICE ESTIMATE".
+- Summary of inputs: category, weight, condition.
+- Indicative value computed from weight × recycler rate for that category.
+- Condition can adjust the rate (e.g. 100% Working, 75% Partially Working, 50% Not Working).
+- Subtext: "*Final price confirmed during handover".
+- "FIND RECYCLERS" button.
+
 ## Profile
 
 - First-time collectors complete a short profile: name, area/pincode.
@@ -52,10 +61,11 @@ Phone OTP via Lovable Cloud phone sign-in matches this sketch; SMS sending needs
 ## Technical notes
 
 - TanStack Start, React, TypeScript, Tailwind; mobile-first layout matching your sketches (centred phone-width card on desktop).
-- Lovable Cloud: phone auth (or email fallback), profiles table, pickup requests table, row-level security so each collector only sees their own data.
+- Lovable Cloud: phone auth (or email fallback), profiles table, pickup requests table, category rate table, row-level security so each collector only sees their own data.
 - Mobile number validated (+91, 10 digits); 6-digit OTP with expiry and resend throttling.
 - Camera works from the phone browser via the standard HTML media capture; gallery via file input. Photos are uploaded to Lovable Cloud storage.
 - AI image classification: Lovable AI Gateway call from a server function, using a vision model. Returns one of the supported categories and a confidence score.
+- Price engine: per-category rate in Cloud table; condition applies a multiplier. No market-price AI prediction.
 - Clean, trustworthy recycling-green design in the spirit of the sketch; I'll propose visual directions before building.
 
 ## Open questions
