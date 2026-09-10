@@ -36,12 +36,15 @@ This builder makes web applications, so Flutter, Firebase, SQLite/Drift and an o
 
 ## Data stored
 
-- **profiles** — name, phone, role, language, area, verified.
-- **recyclers** — name, location, accepted materials, indicative rates, verification status and date, rating.
-- **rates** — indicative ₹/kg per category.
-- **pickup_requests** — collector, recycler, category, weight, condition, indicative price, final price, status (pending / accepted / completed), otp_verified, qr_scanned, receipt_number, created_at, completed_at.
+Mapped from your Firestore sketch to Lovable Cloud (Postgres) tables:
 
-Row-level security: a collector reads and writes only their own pickup requests; recyclers and rates are publicly readable.
+- **users** — managed by Lovable Cloud auth (phone, email, etc.).
+- **profiles** — user_id, name, phone, role (collector / recycler / admin), language, location, verified.
+- **collectors** — collector_id (links to user), name, phone, location, verified.
+- **recyclers** — recycler_id, name, location, materials (array of accepted categories), indicative_rates (per category), verification_status, verification_date, rating.
+- **transactions** — transaction_id, collector_id, recycler_id, category, weight, condition, indicative_price, final_price, otp_verified, qr_scanned, status (pending / accepted / completed / cancelled), timestamp, receipt_number, completed_at.
+
+Row-level security: a collector reads and writes only their own transactions and collector profile; recyclers are publicly readable.
 
 ## Later phases (planned, not in Phase 1)
 
@@ -53,9 +56,9 @@ Smart Matching score (price / distance / material / verification with an overall
 - Lovable Cloud for auth, Postgres tables above, and a storage bucket for photos.
 - Camera via browser media capture, gallery via file input.
 - Category detection: server function calling a vision model through Lovable AI; response constrained to supported categories (laptop, mobile, monitor, television, printer, keyboard, mouse, cable, battery, other) plus a confidence score.
-- QR encodes the pickup request id; handover OTP generated and verified server-side.
+- QR encodes the transaction_id; handover OTP generated and verified server-side.
 - Receipt number generated server-side on completion (KC-YYYY-NNNNNN).
-- Sample verified recyclers and rate table seeded so the demo flow works immediately.
+- Sample verified recyclers with indicative rates seeded so the demo flow works immediately.
 - Recycling-green, high-contrast, large-tap-target design suited to outdoor phone use; I'll propose visual directions before building.
 
 ## Open question
