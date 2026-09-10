@@ -1,6 +1,6 @@
-# Kabadiwala Connect — Phase 1: Collector App
+# Kabadiwala Connect
 
-Build the collector app end-to-end, Screens 1–9. Recycler dashboard, admin panel, smart matching, offline sync, voice and full history come in later phases.
+Phase 1: the collector app end-to-end, Screens 1–9. Phase 2: the recycler dashboard. Admin panel, smart matching, offline sync and voice come later.
 
 ## Technologies note
 
