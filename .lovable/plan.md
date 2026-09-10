@@ -56,9 +56,9 @@ Smart Matching score (price / distance / material / verification with an overall
 - Lovable Cloud for auth, Postgres tables above, and a storage bucket for photos.
 - Camera via browser media capture, gallery via file input.
 - Category detection: server function calling a vision model through Lovable AI; response constrained to supported categories (laptop, mobile, monitor, television, printer, keyboard, mouse, cable, battery, other) plus a confidence score.
-- QR encodes the pickup request id; handover OTP generated and verified server-side.
+- QR encodes the transaction_id; handover OTP generated and verified server-side.
 - Receipt number generated server-side on completion (KC-YYYY-NNNNNN).
-- Sample verified recyclers and rate table seeded so the demo flow works immediately.
+- Sample verified recyclers with indicative rates seeded so the demo flow works immediately.
 - Recycling-green, high-contrast, large-tap-target design suited to outdoor phone use; I'll propose visual directions before building.
 
 ## Open question
