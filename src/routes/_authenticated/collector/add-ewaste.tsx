@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Camera, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { listRecyclers, type Recycler } from "@/lib/services/recyclerService";
 import { createPickup } from "@/lib/services/transactionService";
@@ -28,7 +28,9 @@ const CATEGORIES = ["Laptop", "Mobile", "Monitor", "Television", "Printer", "Key
 function AddEWaste() {
   const { category: preset } = Route.useSearch();
   const navigate = useNavigate();
-  const [category, setCategory] = useState(preset ?? "Laptop");
+  const [category, setCategory] = useState(
+    CATEGORIES.find((c) => c.toLowerCase() === (preset ?? "").toLowerCase()) ?? "Laptop",
+  );
   const [weight, setWeight] = useState("");
   const [condition, setCondition] = useState<Condition>("working");
   const [recyclers, setRecyclers] = useState<Recycler[]>([]);
@@ -103,7 +105,12 @@ function AddEWaste() {
               </option>
             ))}
           </select>
-          <p className="mt-2 text-xs text-muted-foreground">Photo and automatic identification come later.</p>
+          <Link
+            to="/collector/identify"
+            className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-border text-sm font-medium text-foreground"
+          >
+            <Camera className="size-4" aria-hidden /> Identify with a photo
+          </Link>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-4">
