@@ -59,9 +59,18 @@ Sidebar layout: Dashboard, Requests, Materials, Rates, History, Profile.
 
 Status flow on a transaction: pending → accepted → confirmed → completed (or rejected/cancelled). Only the assigned recycler can act on a request.
 
+## Phase 3 — Admin Dashboard (desktop web)
+
+Simple admin console:
+
+- **Collectors** — list collectors, view details, mark as verified.
+- **Recyclers** — list recyclers, verify authorization, set verification date and status.
+- **Transactions** — monitor all transactions by status, recycler, collector, date.
+- **Analytics** — total e-waste collected, formal channelization metric, active collectors count, active recyclers count.
+
 ## Later phases
 
-Smart Matching score (price / distance / material / verification with an overall score and recommendation), admin verification and analytics, offline capture with auto-sync, Hindi + English voice input and spoken price, full transaction history browse/search.
+Smart Matching score (price / distance / material / verification with an overall score and recommendation), offline capture with auto-sync, Hindi + English voice input and spoken price, full transaction history browse/search.
 
 ## Technical notes
 
