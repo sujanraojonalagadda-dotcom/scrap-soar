@@ -104,9 +104,18 @@ The collector app keeps working with no internet.
 
 Instead of the SQLite/Drift store from your Flutter spec, the web app uses the browser's on-device storage (IndexedDB) with a service worker, which plays the same role.
 
+## Phase 6 — Voice support
+
+For collectors who prefer speaking to typing.
+
+- Mic button on the details screen: 🎤 "Laptop 3 kilo hai" → speech-to-text → parsed into category "Laptop" and weight "3 kg" → the form fills itself, with the collector able to correct anything.
+- The app speaks results back: 🔊 "Aapka estimated price ₹420 hai."
+- Hindi and English first; regional languages added later.
+- Speech-to-text and text-to-speech both run through Lovable AI from a server function; a language toggle is stored on the profile.
+
 ## Later phases
 
-Smart Matching score (price / distance / material / verification with an overall score and recommendation), Hindi + English voice input and spoken price, full transaction history browse/search.
+Smart Matching score (price / distance / material / verification with an overall score and recommendation), full transaction history browse/search, regional languages.
 
 ## Technical notes
 
