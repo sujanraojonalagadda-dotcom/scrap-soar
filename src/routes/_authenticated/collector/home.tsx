@@ -5,9 +5,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile, type CollectorProfile } from "@/lib/services/profileService";
 import { signOut } from "@/lib/services/authService";
 import { NotificationBell } from "@/components/NotificationBell";
-import { listCollectorPickups, STATUS_LABEL, statusTone, type Pickup } from "@/lib/services/transactionService";
+import {
+  listCollectorPickups,
+  listOffersForListing,
+  STATUS_LABEL,
+  statusTone,
+  type Pickup,
+  type RecyclerOffer,
+} from "@/lib/services/transactionService";
 import { listRecyclers, type Recycler } from "@/lib/services/recyclerService";
 import { formatRupees } from "@/lib/services/priceService";
+import { formatDistance, getCurrentPosition, haversineKm, isValidCoordinate } from "@/lib/services/locationService";
 
 const ACTIVE_SALE_STATUSES = ["sale_accepted", "pickup_scheduled", "handed_over", "recycler_confirmed"];
 
@@ -40,6 +48,8 @@ function CollectorHome() {
   const [userId, setUserId] = useState<string | null>(null);
   const [listings, setListings] = useState<Pickup[]>([]);
   const [recyclers, setRecyclers] = useState<Recycler[]>([]);
+  const [offers, setOffers] = useState<RecyclerOffer[]>([]);
+  const [myPoint, setMyPoint] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -51,8 +61,15 @@ function CollectorHome() {
       }
       setProfile(p);
       setUserId(data.user.id);
-      setListings(await listCollectorPickups(data.user.id).catch(() => []));
+      const mine = await listCollectorPickups(data.user.id).catch(() => []);
+      setListings(mine);
       setRecyclers(await listRecyclers().catch(() => []));
+      const pendingLists = mine.filter((item) => item.status === "purchase_requested");
+      const loadedOffers = await Promise.all(pendingLists.map((item) => listOffersForListing(item.id).catch(() => [])));
+      setOffers(loadedOffers.flat().filter((offer) => offer.status === "requested"));
+      getCurrentPosition()
+        .then(setMyPoint)
+        .catch(() => setMyPoint(null));
       setLoading(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -72,6 +89,23 @@ function CollectorHome() {
   }
 
   const requested = listings.filter((item) => item.status === "purchase_requested");
+  const requestNotices = offers
+    .map((offer) => {
+      const listing = requested.find((item) => item.id === offer.waste_listing_id);
+      if (!listing) return null;
+      const buyer = recyclers.find((r) => r.id === offer.recycler_id) ?? null;
+      const hasCoords =
+        !!buyer &&
+        typeof buyer.latitude === "number" &&
+        typeof buyer.longitude === "number" &&
+        isValidCoordinate(buyer.latitude, buyer.longitude);
+      const distance =
+        hasCoords && myPoint
+          ? formatDistance(haversineKm(myPoint, { latitude: buyer!.latitude!, longitude: buyer!.longitude! }))
+          : null;
+      return { offer, listing, buyer, distance };
+    })
+    .filter((entry): entry is { offer: RecyclerOffer; listing: Pickup; buyer: Recycler | null; distance: string | null } => entry !== null);
   const activeSales = listings.filter((item) => ACTIVE_SALE_STATUSES.includes(item.status));
 
   return (
@@ -90,17 +124,60 @@ function CollectorHome() {
         </div>
       </header>
 
-      {requested.length > 0 && (
+      {requestNotices.length > 0 && (
         <section className="px-4 pt-4">
           <div className="rounded-xl border border-warning bg-warning-light p-4">
-            <h2 className="text-sm font-semibold text-warning-dark">🔔 New recycler requests</h2>
-            <ul className="mt-2 space-y-2">
-              {requested.map((item) => (
-                <li key={item.id} className="text-sm text-warning-dark">
-                  <span className="font-medium capitalize">{item.category}</span> · {Number(item.weight_kg)} kg ·{" "}
-                  <Link to="/collector/listing/$id" params={{ id: item.id }} className="underline">
-                    View details
-                  </Link>
+            <h2 className="text-sm font-semibold text-warning-dark">🔔 New recycler request</h2>
+            <ul className="mt-3 space-y-3">
+              {requestNotices.map(({ offer, listing, buyer, distance }) => (
+                <li key={offer.id} className="rounded-lg border border-warning/50 bg-card p-3">
+                  <p className="font-medium text-foreground">
+                    {buyer?.name ?? "A recycler"}
+                    {buyer?.verified && <span className="ml-1 text-xs font-semibold text-brand-dark">✓ VERIFIED</span>}
+                  </p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {buyer?.name ?? "A recycler"} is interested in buying your {listing.category}.
+                  </p>
+                  <dl className="mt-2 space-y-0.5 text-sm text-muted-foreground">
+                    <div className="flex justify-between gap-3">
+                      <dt>Waste</dt>
+                      <dd className="font-medium capitalize text-foreground">{listing.category}</dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt>Weight</dt>
+                      <dd className="font-medium text-foreground">{Number(listing.weight_kg)} kg</dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt>Offer</dt>
+                      <dd className="font-medium text-foreground">₹{Number(offer.price_per_kg)}/kg</dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt>Total</dt>
+                      <dd className="font-bold text-brand-dark">{formatRupees(Number(offer.total_price))}</dd>
+                    </div>
+                    {distance && (
+                      <div className="flex justify-between gap-3">
+                        <dt>Distance</dt>
+                        <dd className="font-medium text-foreground">{distance}</dd>
+                      </div>
+                    )}
+                  </dl>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Link
+                      to="/collector/listing/$id"
+                      params={{ id: listing.id }}
+                      className="flex h-11 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground"
+                    >
+                      View details
+                    </Link>
+                    <Link
+                      to="/collector/organization/$id"
+                      params={{ id: offer.recycler_id }}
+                      className="flex h-11 items-center rounded-lg border border-border px-4 text-sm font-medium text-foreground"
+                    >
+                      View recycler
+                    </Link>
+                  </div>
                 </li>
               ))}
             </ul>
