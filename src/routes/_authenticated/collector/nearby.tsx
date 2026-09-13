@@ -42,6 +42,7 @@ function NearbyRecyclersPage() {
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [material, setMaterial] = useState<string>("");
+  const [radiusKm, setRadiusKm] = useState<number>(25);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -66,11 +67,17 @@ function NearbyRecyclersPage() {
   useEffect(() => {
     if (!origin) return;
     setLoading(true);
-    listNearbyRecyclers(origin, material || undefined)
-      .then(setRecyclers)
-      .catch(() => setRecyclers([]))
+    listNearbyRecyclers(origin, material || undefined, radiusKm)
+      .then((rows) => {
+        setRecyclers(rows);
+        setError(null);
+      })
+      .catch(() => {
+        setRecyclers([]);
+        setError("Could not load recyclers. Please check your internet connection and try again.");
+      })
       .finally(() => setLoading(false));
-  }, [origin, material]);
+  }, [origin, material, radiusKm]);
 
   async function detectLocation() {
     setLocating(true);
