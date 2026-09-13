@@ -147,20 +147,20 @@ export async function updateRate(recyclerId: string, ratePerKg: number): Promise
 export async function listRecyclers(): Promise<Recycler[]> {
   const { data, error } = await supabase
     .from("recyclers")
-    .select("*")
+    .select(SAFE_COLUMNS)
     .order("verified", { ascending: false })
     .order("created_at", { ascending: true });
   if (error) throw new Error(error.message);
-  return (data ?? []) as Recycler[];
+  return (data ?? []) as unknown as Recycler[];
 }
 
 /** Only admin-approved organisations, for collector-facing lists. */
 export async function listVerifiedRecyclers(): Promise<Recycler[]> {
   const { data, error } = await supabase
     .from("recyclers")
-    .select("*")
+    .select(SAFE_COLUMNS)
     .eq("verified", true)
     .order("created_at", { ascending: true });
   if (error) throw new Error(error.message);
-  return (data ?? []) as Recycler[];
+  return (data ?? []) as unknown as Recycler[];
 }
