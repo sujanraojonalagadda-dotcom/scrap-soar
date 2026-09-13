@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { listCollectorPickups, type Pickup } from "@/lib/services/transactionService";
 import { conditionLabel, formatRupees } from "@/lib/services/priceService";
+import { listQueuedPickups, type QueuedPickup } from "@/lib/services/offlineService";
 
 export const Route = createFileRoute("/_authenticated/collector/history")({
   head: () => ({
@@ -21,14 +22,29 @@ export const Route = createFileRoute("/_authenticated/collector/history")({
 
 function HistoryPage() {
   const [pickups, setPickups] = useState<Pickup[]>([]);
+  const [queued, setQueued] = useState<QueuedPickup[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
+    let userId: string | null = null;
+    const load = async () => {
+      const { data } = await supabase.auth.getUser();
       if (!data.user) return;
+      userId = data.user.id;
+      setQueued(listQueuedPickups(data.user.id));
       setPickups(await listCollectorPickups(data.user.id).catch(() => []));
       setLoading(false);
-    });
+    };
+    const refreshQueued = () => {
+      if (userId) setQueued(listQueuedPickups(userId));
+    };
+    window.addEventListener("kc:queue-changed", refreshQueued);
+    window.addEventListener("kc:queue-synced", load);
+    void load();
+    return () => {
+      window.removeEventListener("kc:queue-changed", refreshQueued);
+      window.removeEventListener("kc:queue-synced", load);
+    };
   }, []);
 
   return (
@@ -41,9 +57,30 @@ function HistoryPage() {
       </header>
 
       <section className="px-4 py-6">
+        {queued.length > 0 && (
+          <div className="mb-4">
+            <h2 className="mb-2 text-sm font-semibold text-warning-dark">Waiting to sync</h2>
+            <ul className="space-y-3">
+              {queued.map((p) => (
+                <li key={p.id} className="rounded-xl border border-warning bg-warning-light p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold capitalize text-foreground">{p.category}</p>
+                      <p className="text-sm text-muted-foreground">{p.weightKg} kg · {conditionLabel(p.condition)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-foreground">{formatRupees(p.indicativePrice)}</p>
+                      <p className="text-xs font-medium text-warning-dark">Saved on this device</p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {loading ? (
           <Loader2 className="size-6 animate-spin text-brand" aria-hidden />
-        ) : pickups.length === 0 ? (
+        ) : pickups.length === 0 && queued.length === 0 ? (
           <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
             No pickups recorded yet.
           </p>

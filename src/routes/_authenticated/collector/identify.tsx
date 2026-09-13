@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Camera, Images, Loader2 } from "lucide-react";
 import { AI_CATEGORIES, classifyEwaste, type ClassifyResult } from "@/lib/services/aiService.functions";
@@ -27,6 +27,18 @@ function IdentifyPage() {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ClassifyResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [online, setOnline] = useState(true);
+
+  useEffect(() => {
+    setOnline(navigator.onLine);
+    const update = () => setOnline(navigator.onLine);
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
 
   async function onFile(file: File | undefined) {
     if (!file) return;
@@ -43,6 +55,10 @@ function IdentifyPage() {
       return;
     }
     setPhoto(dataUrl);
+    if (!navigator.onLine) {
+      setResult({ available: false, reason: "AI classification unavailable — no connection" });
+      return;
+    }
     setBusy(true);
     try {
       setResult(await classify({ data: { imageDataUrl: dataUrl } }));
@@ -67,6 +83,11 @@ function IdentifyPage() {
       </header>
 
       <section className="space-y-4 px-4 py-6">
+        {!online && (
+          <p className="rounded-lg bg-warning-light px-3 py-2 text-sm text-warning-dark">
+            Photo identification needs internet. You can still choose the item manually after adding a photo.
+          </p>
+        )}
         <div className="flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-card">
           {photo ? (
             <img src={photo} alt="E-waste item to identify" className="size-full object-contain" />

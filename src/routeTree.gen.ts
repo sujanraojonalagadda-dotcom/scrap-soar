@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as AuthenticatedCollectorAddEwasteRouteImport } from './routes/_authenticated/collector/add-ewaste'
 import { Route as AuthenticatedCollectorHistoryRouteImport } from './routes/_authenticated/collector/history'
 import { Route as AuthenticatedCollectorHomeRouteImport } from './routes/_authenticated/collector/home'
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
+  id: '/api/transcribe',
+  path: '/api/transcribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedCollectorAddEwasteRoute =
@@ -94,6 +100,7 @@ const AuthenticatedRecyclerRequestIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
   '/collector/add-ewaste': typeof AuthenticatedCollectorAddEwasteRoute
   '/collector/history': typeof AuthenticatedCollectorHistoryRoute
   '/collector/home': typeof AuthenticatedCollectorHomeRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
   '/collector/add-ewaste': typeof AuthenticatedCollectorAddEwasteRoute
   '/collector/history': typeof AuthenticatedCollectorHistoryRoute
   '/collector/home': typeof AuthenticatedCollectorHomeRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/api/transcribe': typeof ApiTranscribeRoute
   '/_authenticated/collector/add-ewaste': typeof AuthenticatedCollectorAddEwasteRoute
   '/_authenticated/collector/history': typeof AuthenticatedCollectorHistoryRoute
   '/_authenticated/collector/home': typeof AuthenticatedCollectorHomeRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/api/transcribe'
     | '/collector/add-ewaste'
     | '/collector/history'
     | '/collector/home'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/api/transcribe'
     | '/collector/add-ewaste'
     | '/collector/history'
     | '/collector/home'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/api/transcribe'
     | '/_authenticated/collector/add-ewaste'
     | '/_authenticated/collector/history'
     | '/_authenticated/collector/home'
@@ -179,6 +191,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  ApiTranscribeRoute: typeof ApiTranscribeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/transcribe': {
+      id: '/api/transcribe'
+      path: '/api/transcribe'
+      fullPath: '/api/transcribe'
+      preLoaderRoute: typeof ApiTranscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/collector/add-ewaste': {
@@ -302,6 +322,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  ApiTranscribeRoute: ApiTranscribeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
