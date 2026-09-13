@@ -286,7 +286,7 @@ function RequestDetail() {
             />
             <button
               type="button"
-              onClick={() => run(() => markPaid(listing.id, method, reference.trim() || null), "Payment could not be recorded.")}
+              onClick={() => run(() => markPaid(listing.id, method, reference.trim() || null, Number(finalPrice) || listing.final_price), "Payment could not be recorded.")}
               disabled={busy}
               className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-50"
             >

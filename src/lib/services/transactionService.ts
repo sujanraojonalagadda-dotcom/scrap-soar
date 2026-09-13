@@ -363,10 +363,11 @@ export async function confirmWeightAndPrice(
   return { ok: true };
 }
 
-export async function markPaid(id: string, method: string, reference: string | null): Promise<void> {
+export async function markPaid(id: string, method: string, reference: string | null, amount?: number | null): Promise<void> {
   const { error } = await supabase
     .from("transactions")
     .update({
+      ...(amount != null && Number.isFinite(amount) ? { final_price: amount } : {}),
       payment_status: "paid",
       payment_method: method,
       payment_reference: reference,
