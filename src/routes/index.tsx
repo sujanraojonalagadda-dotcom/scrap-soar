@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Recycle, Loader2 } from "lucide-react";
 import { sendOtp, verifyOtp, normalisePhone } from "@/lib/services/authService";
 import { getMyProfile } from "@/lib/services/profileService";
+import { isCurrentUserAdmin } from "@/lib/services/adminService";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -52,6 +53,10 @@ function LoginPage() {
 
   async function routeAfterLogin(userId: string) {
     try {
+      if (await isCurrentUserAdmin(userId)) {
+        navigate({ to: "/admin/dashboard" });
+        return;
+      }
       const profile = await getMyProfile(userId);
       if (!profile) {
         navigate({ to: "/collector/register" });
