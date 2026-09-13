@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as CollectorDashboardRouteImport } from './routes/collector-dashboard'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedCollectorRouteRouteImport } from './routes/_authenticated/collector/route'
 import { Route as AuthenticatedRecyclerRouteRouteImport } from './routes/_authenticated/recycler/route'
@@ -39,6 +40,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectorDashboardRoute = CollectorDashboardRouteImport.update({
+  id: '/collector-dashboard',
+  path: '/collector-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
@@ -162,6 +168,7 @@ const AuthenticatedRecyclerRequestIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/collector-dashboard': typeof CollectorDashboardRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
   '/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/collector-dashboard': typeof CollectorDashboardRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
   '/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
@@ -210,6 +218,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/collector-dashboard': typeof CollectorDashboardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
   '/_authenticated/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
@@ -235,6 +244,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/collector-dashboard'
     | '/admin'
     | '/collector'
     | '/recycler'
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/collector-dashboard'
     | '/admin'
     | '/collector'
     | '/recycler'
@@ -282,6 +293,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/collector-dashboard'
     | '/_authenticated/admin'
     | '/_authenticated/collector'
     | '/_authenticated/recycler'
@@ -307,6 +319,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  CollectorDashboardRoute: typeof CollectorDashboardRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
 }
 
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collector-dashboard': {
+      id: '/collector-dashboard'
+      path: '/collector-dashboard'
+      fullPath: '/collector-dashboard'
+      preLoaderRoute: typeof CollectorDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -556,6 +576,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  CollectorDashboardRoute: CollectorDashboardRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
 }
 export const routeTree = rootRouteImport
