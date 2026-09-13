@@ -177,7 +177,7 @@ export async function listOpenListings(): Promise<Pickup[]> {
     .from("transactions")
     .select("*")
     .is("recycler_id", null)
-    .in("status", ["pending_recycler", "offer_received"])
+    .in("status", ["available_for_purchase", "purchase_requested"])
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return (data ?? []) as Pickup[];
@@ -242,7 +242,7 @@ export async function createOffer(input: CreateOfferInput): Promise<RecyclerOffe
   return data as RecyclerOffer;
 }
 
-/** Collector picks exactly one offer. Every other offer becomes "not selected". */
+/** Collector accepts exactly one purchase request. Every other request becomes "not selected". */
 export async function acceptOffer(listing: Pickup, offer: RecyclerOffer): Promise<void> {
   const { error } = await supabase
     .from("transactions")
@@ -252,7 +252,7 @@ export async function acceptOffer(listing: Pickup, offer: RecyclerOffer): Promis
       agreed_price_per_kg: offer.price_per_kg,
       indicative_price: offer.total_price,
       pickup_date: offer.pickup_date,
-      status: "recycler_selected",
+      status: "sale_accepted",
     })
     .eq("id", listing.id);
   if (error) throw new Error(error.message);
@@ -267,6 +267,26 @@ export async function acceptOffer(listing: Pickup, offer: RecyclerOffer): Promis
   if (others.error) throw new Error(others.error.message);
 }
 
+/** Collector turns down one purchase request; the listing stays open to other recyclers. */
+export async function rejectOffer(listing: Pickup, offer: RecyclerOffer): Promise<void> {
+  const rejected = await supabase.from("recycler_offers").update({ status: "rejected" }).eq("id", offer.id);
+  if (rejected.error) throw new Error(rejected.error.message);
+
+  const remaining = await supabase
+    .from("recycler_offers")
+    .select("id")
+    .eq("waste_listing_id", listing.id)
+    .eq("status", "requested");
+  if (remaining.error) throw new Error(remaining.error.message);
+  if ((remaining.data ?? []).length === 0) {
+    const { error } = await supabase
+      .from("transactions")
+      .update({ status: "available_for_purchase" })
+      .eq("id", listing.id);
+    if (error) throw new Error(error.message);
+  }
+}
+
 /* ------------------------------- transitions ------------------------------- */
 
 export async function recyclerAcceptRequest(id: string, pickupDate: string | null): Promise<void> {
@@ -277,17 +297,18 @@ export async function recyclerAcceptRequest(id: string, pickupDate: string | nul
   if (error) throw new Error(error.message);
 }
 
-/** Declining releases the listing back to the marketplace. */
+/** A recycler backing out releases the listing back to the marketplace. */
 export async function recyclerDeclineRequest(listing: Pickup): Promise<void> {
   if (listing.selected_offer_id) {
-    await supabase.from("recycler_offers").update({ status: "declined" }).eq("id", listing.selected_offer_id);
+    await supabase.from("recycler_offers").update({ status: "withdrawn" }).eq("id", listing.selected_offer_id);
   }
   const { error } = await supabase
     .from("transactions")
-    .update({ recycler_id: null, selected_offer_id: null, status: "pending_recycler" })
+    .update({ recycler_id: null, selected_offer_id: null, status: "available_for_purchase" })
     .eq("id", listing.id);
   if (error) throw new Error(error.message);
 }
+
 
 export interface HandoverInput {
   actualWeightKg: number;
