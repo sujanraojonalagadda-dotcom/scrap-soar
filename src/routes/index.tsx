@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
         content:
           "Sign in with your mobile number to log e-waste pickups, get an indicative value and hand over to a verified recycler.",
       },
-      { property: "og:title", content: "Kabadiwala Connect — Collector Sign In" },
+      { property: "og:title", content: "Kabadiwala Connect — Sign In" },
       {
         property: "og:description",
         content: "Log e-waste pickups, get an indicative value and hand over to a verified recycler.",
