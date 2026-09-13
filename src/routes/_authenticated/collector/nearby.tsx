@@ -214,7 +214,7 @@ function NearbyRecyclersPage() {
 
         {profile && userId && (
           <LocationPicker
-            saved={profile as unknown as Record<string, never>}
+            saved={profile}
             saving={saving}
             sharingLabel="Share my location with recyclers"
             onSave={async (input) => {

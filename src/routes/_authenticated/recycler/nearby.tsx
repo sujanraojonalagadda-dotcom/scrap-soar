@@ -153,7 +153,7 @@ function RecyclerNearbyPage() {
 
         {recycler && (
           <LocationPicker
-            saved={recycler as unknown as Record<string, never>}
+            saved={recycler}
             saving={saving}
             sharingLabel="Show my business location to collectors"
             onSave={async (input) => {
