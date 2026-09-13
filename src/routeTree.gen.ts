@@ -33,6 +33,8 @@ import { Route as AuthenticatedRecyclerHomeRouteImport } from './routes/_authent
 import { Route as AuthenticatedRecyclerNearbyRouteImport } from './routes/_authenticated/recycler/nearby'
 import { Route as AuthenticatedRecyclerRegisterRouteImport } from './routes/_authenticated/recycler/register'
 import { Route as AuthenticatedRecyclerRequestsRouteImport } from './routes/_authenticated/recycler/requests'
+import { Route as AuthenticatedCollectorListingIdRouteImport } from './routes/_authenticated/collector/listing.$id'
+import { Route as AuthenticatedCollectorOrganizationIdRouteImport } from './routes/_authenticated/collector/organization.$id'
 import { Route as AuthenticatedRecyclerRequestIdRouteImport } from './routes/_authenticated/recycler/request.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -171,6 +173,18 @@ const AuthenticatedRecyclerRequestsRoute =
     path: '/requests',
     getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
+const AuthenticatedCollectorListingIdRoute =
+  AuthenticatedCollectorListingIdRouteImport.update({
+    id: '/listing/$id',
+    path: '/listing/$id',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
+  } as any)
+const AuthenticatedCollectorOrganizationIdRoute =
+  AuthenticatedCollectorOrganizationIdRouteImport.update({
+    id: '/organization/$id',
+    path: '/organization/$id',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
+  } as any)
 const AuthenticatedRecyclerRequestIdRoute =
   AuthenticatedRecyclerRequestIdRouteImport.update({
     id: '/request/$id',
@@ -202,6 +216,8 @@ export interface FileRoutesByFullPath {
   '/recycler/nearby': typeof AuthenticatedRecyclerNearbyRoute
   '/recycler/register': typeof AuthenticatedRecyclerRegisterRoute
   '/recycler/requests': typeof AuthenticatedRecyclerRequestsRoute
+  '/collector/listing/$id': typeof AuthenticatedCollectorListingIdRoute
+  '/collector/organization/$id': typeof AuthenticatedCollectorOrganizationIdRoute
   '/recycler/request/$id': typeof AuthenticatedRecyclerRequestIdRoute
 }
 export interface FileRoutesByTo {
@@ -228,6 +244,8 @@ export interface FileRoutesByTo {
   '/recycler/nearby': typeof AuthenticatedRecyclerNearbyRoute
   '/recycler/register': typeof AuthenticatedRecyclerRegisterRoute
   '/recycler/requests': typeof AuthenticatedRecyclerRequestsRoute
+  '/collector/listing/$id': typeof AuthenticatedCollectorListingIdRoute
+  '/collector/organization/$id': typeof AuthenticatedCollectorOrganizationIdRoute
   '/recycler/request/$id': typeof AuthenticatedRecyclerRequestIdRoute
 }
 export interface FileRoutesById {
@@ -256,6 +274,8 @@ export interface FileRoutesById {
   '/_authenticated/recycler/nearby': typeof AuthenticatedRecyclerNearbyRoute
   '/_authenticated/recycler/register': typeof AuthenticatedRecyclerRegisterRoute
   '/_authenticated/recycler/requests': typeof AuthenticatedRecyclerRequestsRoute
+  '/_authenticated/collector/listing/$id': typeof AuthenticatedCollectorListingIdRoute
+  '/_authenticated/collector/organization/$id': typeof AuthenticatedCollectorOrganizationIdRoute
   '/_authenticated/recycler/request/$id': typeof AuthenticatedRecyclerRequestIdRoute
 }
 export interface FileRouteTypes {
@@ -284,6 +304,8 @@ export interface FileRouteTypes {
     | '/recycler/nearby'
     | '/recycler/register'
     | '/recycler/requests'
+    | '/collector/listing/$id'
+    | '/collector/organization/$id'
     | '/recycler/request/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -310,6 +332,8 @@ export interface FileRouteTypes {
     | '/recycler/nearby'
     | '/recycler/register'
     | '/recycler/requests'
+    | '/collector/listing/$id'
+    | '/collector/organization/$id'
     | '/recycler/request/$id'
   id:
     | '__root__'
@@ -337,6 +361,8 @@ export interface FileRouteTypes {
     | '/_authenticated/recycler/nearby'
     | '/_authenticated/recycler/register'
     | '/_authenticated/recycler/requests'
+    | '/_authenticated/collector/listing/$id'
+    | '/_authenticated/collector/organization/$id'
     | '/_authenticated/recycler/request/$id'
   fileRoutesById: FileRoutesById
 }
@@ -519,6 +545,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRecyclerRequestsRouteImport
       parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
+    '/_authenticated/collector/listing/$id': {
+      id: '/_authenticated/collector/listing/$id'
+      path: '/listing/$id'
+      fullPath: '/collector/listing/$id'
+      preLoaderRoute: typeof AuthenticatedCollectorListingIdRouteImport
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
+    }
+    '/_authenticated/collector/organization/$id': {
+      id: '/_authenticated/collector/organization/$id'
+      path: '/organization/$id'
+      fullPath: '/collector/organization/$id'
+      preLoaderRoute: typeof AuthenticatedCollectorOrganizationIdRouteImport
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
+    }
     '/_authenticated/recycler/request/$id': {
       id: '/_authenticated/recycler/request/$id'
       path: '/request/$id'
@@ -557,6 +597,8 @@ interface AuthenticatedCollectorRouteRouteChildren {
   AuthenticatedCollectorNearbyRoute: typeof AuthenticatedCollectorNearbyRoute
   AuthenticatedCollectorProfileRoute: typeof AuthenticatedCollectorProfileRoute
   AuthenticatedCollectorRegisterRoute: typeof AuthenticatedCollectorRegisterRoute
+  AuthenticatedCollectorListingIdRoute: typeof AuthenticatedCollectorListingIdRoute
+  AuthenticatedCollectorOrganizationIdRoute: typeof AuthenticatedCollectorOrganizationIdRoute
 }
 
 const AuthenticatedCollectorRouteRouteChildren: AuthenticatedCollectorRouteRouteChildren =
@@ -568,6 +610,9 @@ const AuthenticatedCollectorRouteRouteChildren: AuthenticatedCollectorRouteRoute
     AuthenticatedCollectorNearbyRoute: AuthenticatedCollectorNearbyRoute,
     AuthenticatedCollectorProfileRoute: AuthenticatedCollectorProfileRoute,
     AuthenticatedCollectorRegisterRoute: AuthenticatedCollectorRegisterRoute,
+    AuthenticatedCollectorListingIdRoute: AuthenticatedCollectorListingIdRoute,
+    AuthenticatedCollectorOrganizationIdRoute:
+      AuthenticatedCollectorOrganizationIdRoute,
   }
 
 const AuthenticatedCollectorRouteRouteWithChildren =
