@@ -1,7 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, BadgeCheck, Loader2 } from "lucide-react";
-import { getRecyclerById, type Recycler } from "@/lib/services/recyclerService";
+import {
+  getRecyclerById,
+  getRecyclerPrivateDetails,
+  type Recycler,
+  type RecyclerPrivateDetails,
+} from "@/lib/services/recyclerService";
 
 export const Route = createFileRoute("/_authenticated/collector/organization/$id")({
   head: () => ({
@@ -20,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/collector/organization/$id
 function OrganisationDetail() {
   const { id } = Route.useParams();
   const [recycler, setRecycler] = useState<Recycler | null>(null);
+  const [privateDetails, setPrivateDetails] = useState<RecyclerPrivateDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,6 +33,11 @@ function OrganisationDetail() {
       .then(setRecycler)
       .catch(() => setRecycler(null))
       .finally(() => setLoading(false));
+    // Contact and registration details are released by the database only once
+    // this collector has an accepted sale with the organisation.
+    getRecyclerPrivateDetails(id)
+      .then(setPrivateDetails)
+      .catch(() => setPrivateDetails(null));
   }, [id]);
 
   return (
