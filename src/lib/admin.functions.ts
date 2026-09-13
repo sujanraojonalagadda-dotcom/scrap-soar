@@ -16,22 +16,21 @@ export const getAdminData = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await requireAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Every read below runs as the signed-in admin, authorised by row-level
+    // policies and the admin-only recycler function. No privileged key is used.
     const [profilesResult, recyclersResult, transactionsResult, offersResult] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id,user_id,name,phone,role,language,location,verified,created_at").order("created_at", { ascending: false }),
-      supabaseAdmin
-        .from("recyclers")
-        .select(
-          "id,user_id,name,location,materials,rate_per_kg,verified,verification_date,verification_status,verification_note,contact_person,contact_phone,operating_area,registration_number,business_hours,description,created_at",
-        )
+      context.supabase
+        .from("profiles")
+        .select("id,user_id,name,phone,role,language,location,verified,created_at")
         .order("created_at", { ascending: false }),
-      supabaseAdmin
+      context.supabase.rpc("admin_recyclers"),
+      context.supabase
         .from("transactions")
         .select(
           "id,listing_code,collector_id,recycler_id,category,weight_kg,condition,indicative_price,agreed_price_per_kg,final_weight_kg,final_price,status,otp_verified,payment_status,payment_method,receipt_number,pickup_address,pickup_date,handover_at,recycler_confirmed_at,completed_at,created_at",
         )
         .order("created_at", { ascending: false }),
-      supabaseAdmin
+      context.supabase
         .from("recycler_offers")
         .select("id,waste_listing_id,recycler_id,price_per_kg,total_price,pickup_date,status,created_at")
         .order("created_at", { ascending: false }),
@@ -51,8 +50,11 @@ export const setCollectorVerification = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ id: z.string().uuid(), verified: z.boolean() }).parse(input))
   .handler(async ({ data, context }) => {
     await requireAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("profiles").update({ verified: data.verified }).eq("id", data.id).eq("role", "collector");
+    const { error } = await context.supabase
+      .from("profiles")
+      .update({ verified: data.verified })
+      .eq("id", data.id)
+      .eq("role", "collector");
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -71,9 +73,8 @@ export const setRecyclerVerification = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await requireAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const approved = data.decision === "approved";
-    const { error } = await supabaseAdmin
+    const { error } = await context.supabase
       .from("recyclers")
       .update({
         verified: approved,

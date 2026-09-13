@@ -1,7 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, BadgeCheck, Loader2 } from "lucide-react";
-import { getRecyclerById, type Recycler } from "@/lib/services/recyclerService";
+import {
+  getRecyclerById,
+  getRecyclerPrivateDetails,
+  type Recycler,
+  type RecyclerPrivateDetails,
+} from "@/lib/services/recyclerService";
 
 export const Route = createFileRoute("/_authenticated/collector/organization/$id")({
   head: () => ({
@@ -20,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/collector/organization/$id
 function OrganisationDetail() {
   const { id } = Route.useParams();
   const [recycler, setRecycler] = useState<Recycler | null>(null);
+  const [privateDetails, setPrivateDetails] = useState<RecyclerPrivateDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,6 +33,11 @@ function OrganisationDetail() {
       .then(setRecycler)
       .catch(() => setRecycler(null))
       .finally(() => setLoading(false));
+    // Contact and registration details are released by the database only once
+    // this collector has an accepted sale with the organisation.
+    getRecyclerPrivateDetails(id)
+      .then(setPrivateDetails)
+      .catch(() => setPrivateDetails(null));
   }, [id]);
 
   return (
@@ -57,13 +68,25 @@ function OrganisationDetail() {
             </div>
             {recycler.description && <p className="mt-2 text-sm text-muted-foreground">{recycler.description}</p>}
             <dl className="mt-4 space-y-2 text-sm">
-              <Row label="Contact person" value={recycler.contact_person} />
-              <Row label="Contact number" value={recycler.contact_phone} />
+              <Row
+                label="Contact person"
+                value={privateDetails?.contact_person ?? null}
+                fallback="Shown after your sale is accepted"
+              />
+              <Row
+                label="Contact number"
+                value={privateDetails?.contact_phone ?? null}
+                fallback="Shown after your sale is accepted"
+              />
               <Row label="City / area" value={recycler.location} />
               <Row label="Operating area" value={recycler.operating_area} />
               <Row label="Materials accepted" value={recycler.materials.length ? recycler.materials.join(", ") : null} />
               <Row label="Rate" value={recycler.rate_per_kg ? `₹${Number(recycler.rate_per_kg)}/kg` : null} />
-              <Row label="Registration number" value={recycler.registration_number} />
+              <Row
+                label="Registration number"
+                value={privateDetails?.registration_number ?? null}
+                fallback="Shown after your sale is accepted"
+              />
               <Row label="Business hours" value={recycler.business_hours} />
               <Row
                 label="Verified on"
@@ -81,11 +104,11 @@ function OrganisationDetail() {
   );
 }
 
-function Row({ label, value }: { label: string; value: string | null }) {
+function Row({ label, value, fallback }: { label: string; value: string | null; fallback?: string }) {
   return (
     <div className="flex justify-between gap-3">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className="text-right font-medium text-foreground">{value ?? "Not provided"}</dd>
+      <dd className="text-right font-medium text-foreground">{value ?? fallback ?? "Not provided"}</dd>
     </div>
   );
 }

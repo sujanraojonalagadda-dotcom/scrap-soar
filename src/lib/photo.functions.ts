@@ -4,7 +4,11 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const BUCKET = "waste-photos";
 
-/** Stores a waste photo in private storage and returns its path. */
+/**
+ * Stores a waste photo in the private bucket and returns its path.
+ * Runs as the signed-in user: storage policies only allow writes inside
+ * that user's own folder, so no privileged key is involved.
+ */
 export const uploadWastePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
@@ -20,31 +24,23 @@ export const uploadWastePhoto = createServerFn({ method: "POST" })
     if (bytes.byteLength > 10_000_000) throw new Error("That photo is larger than 10 MB.");
     const extension = data.contentType === "image/png" ? "png" : data.contentType === "image/webp" ? "webp" : "jpg";
     const path = `${context.userId}/${crypto.randomUUID()}.${extension}`;
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.storage
+    const { error } = await context.supabase.storage
       .from(BUCKET)
       .upload(path, bytes, { contentType: data.contentType, upsert: false });
     if (error) throw new Error(error.message);
     return { path };
   });
 
-/** Signed link for a stored photo. Only the owner or a party on the listing may read it. */
+/**
+ * Signed link for a stored photo. The signed link is created with the user's
+ * own session, so the database only issues one when the storage policies allow
+ * that user to read the file (owner, a party on the listing, or an admin).
+ */
 export const getWastePhotoUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ path: z.string().min(3).max(300) }).parse(input))
   .handler(async ({ data, context }) => {
-    let allowed = data.path.startsWith(`${context.userId}/`);
-    if (!allowed) {
-      const { data: rows } = await context.supabase
-        .from("transactions")
-        .select("id")
-        .or(`photo_url.eq.${data.path},handover_photo_url.eq.${data.path}`)
-        .limit(1);
-      allowed = Boolean(rows && rows.length > 0);
-    }
-    if (!allowed) throw new Response("Not allowed", { status: 403 });
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: signed, error } = await supabaseAdmin.storage.from(BUCKET).createSignedUrl(data.path, 3600);
-    if (error || !signed) throw new Error(error?.message ?? "Photo link unavailable.");
+    const { data: signed, error } = await context.supabase.storage.from(BUCKET).createSignedUrl(data.path, 3600);
+    if (error || !signed) throw new Response("Not allowed", { status: 403 });
     return { url: signed.signedUrl };
   });

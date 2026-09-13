@@ -410,6 +410,43 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_recyclers: {
+        Args: never
+        Returns: {
+          address: string | null
+          business_hours: string | null
+          city: string | null
+          contact_person: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string | null
+          id: string
+          latitude: number | null
+          location: string | null
+          location_sharing_enabled: boolean
+          location_updated_at: string | null
+          longitude: number | null
+          materials: string[]
+          name: string
+          operating_area: string | null
+          postal_code: string | null
+          rate_per_kg: number | null
+          registration_number: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          verification_date: string | null
+          verification_note: string | null
+          verification_status: string
+          verified: boolean
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "recyclers"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       recycler_exact_location: {
         Args: { _recycler_id: string }
         Returns: {
@@ -420,6 +457,34 @@ export type Database = {
           name: string
           postal_code: string
           state: string
+        }[]
+      }
+      recycler_private_details: {
+        Args: { _recycler_id: string }
+        Returns: {
+          address: string
+          contact_person: string
+          contact_phone: string
+          latitude: number
+          longitude: number
+          postal_code: string
+          registration_number: string
+          verification_note: string
+        }[]
+      }
+      recyclers_nearby: {
+        Args: { _material?: string }
+        Returns: {
+          city: string
+          id: string
+          latitude: number
+          location_updated_at: string
+          longitude: number
+          materials: string[]
+          name: string
+          rate_per_kg: number
+          state: string
+          verified: boolean
         }[]
       }
     }
