@@ -164,7 +164,7 @@ function RecyclerHome() {
           </div>
           {pickups.length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">
-              No collections assigned yet. Send an offer on available e-waste to get started.
+              No collections assigned yet. Buy available waste to get started.
             </p>
           ) : (
             <ul className="mt-3 divide-y divide-border">

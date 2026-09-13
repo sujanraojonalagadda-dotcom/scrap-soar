@@ -71,7 +71,7 @@ function Recyclers() {
     <div className="mx-auto max-w-6xl">
       <h1 className="text-2xl font-bold">Recyclers</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Only approved organisations appear to collectors and can send offers.
+        Only verified organisations can see listings and buy waste.
       </p>
       {error && (
         <p role="alert" className="mt-4 text-sm text-destructive">

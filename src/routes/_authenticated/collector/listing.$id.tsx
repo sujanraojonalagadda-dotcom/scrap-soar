@@ -322,7 +322,7 @@ function ListingDetail() {
 
         {selected && (
           <article className="rounded-xl border border-border bg-card p-4">
-            <h2 className="font-semibold text-foreground">Selected recycler</h2>
+            <h2 className="font-semibold text-foreground">Buyer</h2>
             <p className="mt-1 text-sm text-foreground">{selected.name}</p>
             <p className="text-sm text-muted-foreground">{selected.location ?? "Location not set"}</p>
             {listing.agreed_price_per_kg && (
@@ -348,7 +348,7 @@ function ListingDetail() {
 
         {listing.status === "sale_accepted" && (
           <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
-            Waiting for {selected?.name ?? "the recycler"} to accept the collection request.
+            Waiting for {selected?.name ?? "the buyer"} to schedule the pickup.
           </p>
         )}
 

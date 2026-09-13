@@ -148,7 +148,7 @@ function RequestDetail() {
           </p>
           {listing.agreed_price_per_kg && (
             <p className="mt-2 text-sm text-muted-foreground">
-              Agreed rate: ₹{Number(listing.agreed_price_per_kg)}/kg · offer total{" "}
+              Agreed rate: ₹{Number(listing.agreed_price_per_kg)}/kg · agreed total{" "}
               {formatRupees(listing.indicative_price)}
             </p>
           )}
@@ -175,7 +175,7 @@ function RequestDetail() {
                 disabled={busy}
                 className="flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-50"
               >
-                {busy && <Loader2 className="size-4 animate-spin" aria-hidden />} Accept collection
+                {busy && <Loader2 className="size-4 animate-spin" aria-hidden />} Schedule pickup
               </button>
               <button
                 type="button"
@@ -187,7 +187,7 @@ function RequestDetail() {
               </button>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Declining returns this listing to other recyclers.
+              Backing out returns this listing to other authorized recyclers.
             </p>
           </article>
         )}

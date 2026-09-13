@@ -120,7 +120,7 @@ function HistoryPage() {
                   </div>
                   {open > 0 && (
                     <p className="mt-3 rounded-lg bg-brand-light px-3 py-2 text-sm font-medium text-brand-dark">
-                      {open} recycler {open === 1 ? "offer" : "offers"} waiting for your decision
+                      {open} purchase {open === 1 ? "request" : "requests"} waiting for your decision
                     </p>
                   )}
                   <Link
