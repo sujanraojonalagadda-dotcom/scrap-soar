@@ -114,6 +114,8 @@ export interface CreatePickupInput {
   latitude?: number | null;
   longitude?: number | null;
   pickupAddress?: string | null;
+  askingPrice?: number | null;
+
 }
 
 export async function createPickup(input: CreatePickupInput): Promise<Pickup> {
@@ -135,7 +137,9 @@ export async function createPickup(input: CreatePickupInput): Promise<Pickup> {
       latitude: input.latitude ?? null,
       longitude: input.longitude ?? null,
       pickup_address: input.pickupAddress ?? null,
-      status: input.recyclerId ? "recycler_selected" : "pending_recycler",
+      asking_price: input.askingPrice ?? null,
+      status: input.recyclerId ? "sale_accepted" : "available_for_purchase",
+
     })
     .select()
     .single();
