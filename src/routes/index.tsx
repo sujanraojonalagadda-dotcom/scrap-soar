@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kabadiwala Connect — Collector Sign In" },
+      { title: "Kabadiwala Connect — Sign In" },
       {
         name: "description",
         content:
@@ -122,7 +122,7 @@ function LoginPage() {
             <Recycle className="size-7 text-brand-dark" aria-hidden />
           </span>
           <h1 className="mt-4 text-xl font-bold tracking-tight text-brand-dark">KABADIWALA CONNECT</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Collector sign in</p>
+          <p className="mt-1 text-sm text-muted-foreground">Sign in — collector, recycler or admin</p>
         </div>
 
         {stage === "phone" ? (
