@@ -1,12 +1,14 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
-import { isCurrentUserAdmin } from "@/lib/services/adminService";
+import { getSessionRole } from "@/lib/services/roleService";
 import { AdminShell } from "@/components/AdminShell";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getUser();
-    if (!data.user || !(await isCurrentUserAdmin(data.user.id))) throw redirect({ to: "/collector/home" });
+    const session = await getSessionRole();
+    if (!session) throw redirect({ to: "/" });
+    if (session.role === "recycler") throw redirect({ to: "/recycler/home" });
+    if (session.role === "collector") throw redirect({ to: "/collector/home" });
+    if (session.role === null) throw redirect({ to: "/collector/register" });
   },
   component: () => <AdminShell><Outlet /></AdminShell>,
 });

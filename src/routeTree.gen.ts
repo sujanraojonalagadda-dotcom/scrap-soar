@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AdminDashboardRouteImport } from './routes/admin-dashboard'
 import { Route as CollectorDashboardRouteImport } from './routes/collector-dashboard'
 import { Route as RecyclerDashboardRouteImport } from './routes/recycler-dashboard'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
@@ -41,6 +42,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/admin-dashboard',
+  path: '/admin-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectorDashboardRoute = CollectorDashboardRouteImport.update({
@@ -174,6 +180,7 @@ const AuthenticatedRecyclerRequestIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin-dashboard': typeof AdminDashboardRoute
   '/collector-dashboard': typeof CollectorDashboardRoute
   '/recycler-dashboard': typeof RecyclerDashboardRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
@@ -199,6 +206,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin-dashboard': typeof AdminDashboardRoute
   '/collector-dashboard': typeof CollectorDashboardRoute
   '/recycler-dashboard': typeof RecyclerDashboardRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin-dashboard': typeof AdminDashboardRoute
   '/collector-dashboard': typeof CollectorDashboardRoute
   '/recycler-dashboard': typeof RecyclerDashboardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
@@ -253,6 +262,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin-dashboard'
     | '/collector-dashboard'
     | '/recycler-dashboard'
     | '/admin'
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin-dashboard'
     | '/collector-dashboard'
     | '/recycler-dashboard'
     | '/admin'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/admin-dashboard'
     | '/collector-dashboard'
     | '/recycler-dashboard'
     | '/_authenticated/admin'
@@ -331,6 +343,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminDashboardRoute: typeof AdminDashboardRoute
   CollectorDashboardRoute: typeof CollectorDashboardRoute
   RecyclerDashboardRoute: typeof RecyclerDashboardRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
@@ -350,6 +363,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-dashboard': {
+      id: '/admin-dashboard'
+      path: '/admin-dashboard'
+      fullPath: '/admin-dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collector-dashboard': {
@@ -596,6 +616,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminDashboardRoute: AdminDashboardRoute,
   CollectorDashboardRoute: CollectorDashboardRoute,
   RecyclerDashboardRoute: RecyclerDashboardRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
