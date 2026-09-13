@@ -472,6 +472,21 @@ export type Database = {
           verification_note: string
         }[]
       }
+      recyclers_nearby: {
+        Args: { _material?: string }
+        Returns: {
+          city: string
+          id: string
+          latitude: number
+          location_updated_at: string
+          longitude: number
+          materials: string[]
+          name: string
+          rate_per_kg: number
+          state: string
+          verified: boolean
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
