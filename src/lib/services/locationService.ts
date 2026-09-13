@@ -145,7 +145,7 @@ export async function listNearbyRecyclers(
 ): Promise<NearbyRecycler[]> {
   // The database returns approximate coordinates only, and only for recyclers
   // who chose to share their location. Exact addresses stay protected.
-  const { data, error } = await supabase.rpc("recyclers_nearby", { _material: material ?? undefined });
+  const { data, error } = await supabase.rpc("recyclers_nearby", material ? { _material: material } : {});
   if (error) throw new Error(error.message);
   interface RecyclerRow {
     id: string;
