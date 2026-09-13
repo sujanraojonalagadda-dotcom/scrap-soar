@@ -195,14 +195,19 @@ function ListingDetail() {
           <p className="mt-3 text-sm text-muted-foreground">
             Indicative value: <span className="font-semibold text-foreground">{formatRupees(listing.indicative_price)}</span>
           </p>
+          {listing.asking_price != null && (
+            <p className="text-sm text-muted-foreground">
+              Your asking price: <span className="font-semibold text-foreground">₹{Number(listing.asking_price)}/kg</span>
+            </p>
+          )}
         </article>
 
-        {(listing.status === "pending_recycler" || listing.status === "offer_received") && (
+        {(listing.status === "available_for_purchase" || listing.status === "purchase_requested") && (
           <article className="rounded-xl border border-border bg-card p-4">
-            <h2 className="font-semibold text-foreground">Recycler offers</h2>
+            <h2 className="font-semibold text-foreground">Purchase requests</h2>
             {openOffers.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">
-                No offers yet. Verified recyclers who accept this material can see your listing.
+                Your waste is available to authorized recyclers. No purchase request yet.
               </p>
             ) : (
               <ul className="mt-3 space-y-3">
@@ -210,7 +215,12 @@ function ListingDetail() {
                   <li key={offer.id} className="rounded-lg border border-border p-3">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-medium text-foreground">{nameFor(offer.recycler_id)}</p>
+                        <p className="font-medium text-foreground">
+                          {nameFor(offer.recycler_id)}
+                          {verifiedFor(offer.recycler_id) && (
+                            <span className="ml-1 text-xs font-semibold text-brand-dark">✓ VERIFIED</span>
+                          )}
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           ₹{Number(offer.price_per_kg)}/kg · pickup{" "}
                           {offer.pickup_date ? new Date(`${offer.pickup_date}T00:00:00`).toLocaleDateString("en-IN") : "to be agreed"}
@@ -221,19 +231,59 @@ function ListingDetail() {
                           params={{ id: offer.recycler_id }}
                           className="mt-1 inline-block text-sm text-info underline"
                         >
-                          View organisation
+                          View recycler
                         </Link>
                       </div>
                       <p className="shrink-0 text-lg font-bold text-brand-dark">{formatRupees(Number(offer.total_price))}</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleAccept(offer)}
-                      disabled={busy}
-                      className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-50"
-                    >
-                      {busy && <Loader2 className="size-4 animate-spin" aria-hidden />} Accept this offer
-                    </button>
+                    {confirming === offer.id ? (
+                      <div className="mt-3 rounded-lg bg-muted p-3">
+                        <p className="text-sm font-semibold text-foreground">Confirm sale</p>
+                        <dl className="mt-2 space-y-1 text-sm">
+                          <Row label="Buyer" value={nameFor(offer.recycler_id)} />
+                          <Row label="Material" value={listing.category} />
+                          <Row label="Weight" value={`${Number(listing.weight_kg)} kg`} />
+                          <Row label="Price" value={`₹${Number(offer.price_per_kg)}/kg`} />
+                          <Row label="Total" value={formatRupees(Number(offer.total_price))} />
+                        </dl>
+                        <div className="mt-3 flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleAccept(offer)}
+                            disabled={busy}
+                            className="flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-50"
+                          >
+                            {busy && <Loader2 className="size-4 animate-spin" aria-hidden />} Confirm sale
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirming(null)}
+                            className="h-11 rounded-lg border border-border px-4 text-sm font-medium text-foreground"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setConfirming(offer.id)}
+                          disabled={busy}
+                          className="h-11 flex-1 rounded-lg bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-50"
+                        >
+                          Accept sale
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleReject(offer)}
+                          disabled={busy}
+                          className="h-11 rounded-lg border border-destructive/40 px-4 text-sm font-medium text-destructive disabled:opacity-50"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -248,6 +298,7 @@ function ListingDetail() {
             </button>
           </article>
         )}
+
 
         {selected && (
           <article className="rounded-xl border border-border bg-card p-4">
