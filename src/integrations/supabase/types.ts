@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+          transaction_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          title: string
+          transaction_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+          transaction_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
@@ -220,6 +261,7 @@ export type Database = {
       }
       transactions: {
         Row: {
+          accepted_at: string | null
           agreed_price_per_kg: number | null
           asking_price: number | null
           category: string
@@ -257,6 +299,7 @@ export type Database = {
           weight_kg: number
         }
         Insert: {
+          accepted_at?: string | null
           agreed_price_per_kg?: number | null
           asking_price?: number | null
           category: string
@@ -294,6 +337,7 @@ export type Database = {
           weight_kg: number
         }
         Update: {
+          accepted_at?: string | null
           agreed_price_per_kg?: number | null
           asking_price?: number | null
           category?: string
@@ -366,7 +410,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      recycler_exact_location: {
+        Args: { _recycler_id: string }
+        Returns: {
+          address: string
+          city: string
+          latitude: number
+          longitude: number
+          name: string
+          postal_code: string
+          state: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

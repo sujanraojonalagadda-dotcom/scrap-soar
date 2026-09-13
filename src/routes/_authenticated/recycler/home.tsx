@@ -6,6 +6,7 @@ import { getMyRecycler, updateRate, VERIFICATION_LABEL, type Recycler } from "@/
 import { listRecyclerPickups, type Pickup } from "@/lib/services/transactionService";
 import { formatRupees } from "@/lib/services/priceService";
 import { signOut } from "@/lib/services/authService";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export const Route = createFileRoute("/_authenticated/recycler/home")({
   head: () => ({
@@ -28,6 +29,7 @@ function RecyclerHome() {
   const [loading, setLoading] = useState(true);
   const [rate, setRate] = useState("");
   const [saved, setSaved] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -37,6 +39,7 @@ function RecyclerHome() {
         navigate({ to: "/recycler/register" });
         return;
       }
+      setUserId(data.user.id);
       setRecycler(r);
       setRate(r.rate_per_kg ? String(r.rate_per_kg) : "");
       setPickups(await listRecyclerPickups(r.id).catch(() => []));
@@ -82,6 +85,7 @@ function RecyclerHome() {
           <span className="font-bold tracking-tight">KABADIWALA CONNECT — RECYCLER</span>
         </div>
         <div className="flex items-center gap-3">
+          <NotificationBell userId={userId} />
           <Link to="/recycler/available" className="rounded-lg bg-card px-3 py-2 text-sm font-medium text-foreground">
             Available waste
           </Link>

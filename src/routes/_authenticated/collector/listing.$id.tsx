@@ -19,6 +19,7 @@ import {
 import { getRecyclerById, listRecyclers, type Recycler } from "@/lib/services/recyclerService";
 import { conditionLabel, formatRupees } from "@/lib/services/priceService";
 import { WastePhoto } from "@/components/WastePhoto";
+import { RecyclerLocationCard } from "@/components/RecyclerLocationCard";
 import { uploadWastePhoto } from "@/lib/photo.functions";
 import { geolocationErrorMessage, getCurrentPosition, type GeolocationErrorKind } from "@/lib/services/locationService";
 
@@ -345,6 +346,11 @@ function ListingDetail() {
             )}
           </article>
         )}
+
+        {listing.recycler_id &&
+          ["sale_accepted", "pickup_scheduled", "handed_over", "recycler_confirmed", "completed"].includes(listing.status) && (
+            <RecyclerLocationCard recyclerId={listing.recycler_id} verified={selected?.verified ?? false} />
+          )}
 
         {listing.status === "sale_accepted" && (
           <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
