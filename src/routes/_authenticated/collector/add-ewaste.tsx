@@ -220,6 +220,36 @@ function AddEWaste() {
     }
   }
 
+  if (posted) {
+    return (
+      <main className="min-h-screen bg-muted px-4 py-10">
+        <div className="mx-auto max-w-md rounded-xl border border-brand bg-card p-6 text-center">
+          <h1 className="text-lg font-bold text-brand-dark">
+            {online ? "Your waste is now available to authorized recyclers." : "Saved on this device"}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {online
+              ? "Verified recyclers can now see it and send you a purchase request. You choose who buys it."
+              : "This listing will be sent to recyclers automatically once you are back online."}
+          </p>
+          <Link
+            to="/collector/history"
+            className="mt-5 flex h-12 w-full items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground"
+          >
+            View my listings
+          </Link>
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/collector/home" })}
+            className="mt-3 h-12 w-full rounded-lg border border-border text-sm font-medium text-foreground"
+          >
+            Back to home
+          </button>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-muted pb-10">
       <header className="flex items-center gap-3 bg-card px-4 py-4 shadow-sm">
@@ -228,6 +258,7 @@ function AddEWaste() {
         </Link>
         <h1 className="text-lg font-bold text-foreground">List E-Waste</h1>
       </header>
+
 
       <form onSubmit={handleSubmit} className="space-y-4 px-4 py-6">
         <div className="rounded-xl border border-border bg-card p-4">
