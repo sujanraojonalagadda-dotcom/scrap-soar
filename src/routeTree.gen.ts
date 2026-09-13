@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as CollectorDashboardRouteImport } from './routes/collector-dashboard'
+import { Route as RecyclerDashboardRouteImport } from './routes/recycler-dashboard'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedCollectorRouteRouteImport } from './routes/_authenticated/collector/route'
 import { Route as AuthenticatedRecyclerRouteRouteImport } from './routes/_authenticated/recycler/route'
@@ -45,6 +46,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const CollectorDashboardRoute = CollectorDashboardRouteImport.update({
   id: '/collector-dashboard',
   path: '/collector-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecyclerDashboardRoute = RecyclerDashboardRouteImport.update({
+  id: '/recycler-dashboard',
+  path: '/recycler-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
@@ -169,6 +175,7 @@ const AuthenticatedRecyclerRequestIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/collector-dashboard': typeof CollectorDashboardRoute
+  '/recycler-dashboard': typeof RecyclerDashboardRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
   '/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
@@ -193,6 +200,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/collector-dashboard': typeof CollectorDashboardRoute
+  '/recycler-dashboard': typeof RecyclerDashboardRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
   '/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/collector-dashboard': typeof CollectorDashboardRoute
+  '/recycler-dashboard': typeof RecyclerDashboardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
   '/_authenticated/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/collector-dashboard'
+    | '/recycler-dashboard'
     | '/admin'
     | '/collector'
     | '/recycler'
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/collector-dashboard'
+    | '/recycler-dashboard'
     | '/admin'
     | '/collector'
     | '/recycler'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/collector-dashboard'
+    | '/recycler-dashboard'
     | '/_authenticated/admin'
     | '/_authenticated/collector'
     | '/_authenticated/recycler'
@@ -320,6 +332,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   CollectorDashboardRoute: typeof CollectorDashboardRoute
+  RecyclerDashboardRoute: typeof RecyclerDashboardRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
 }
 
@@ -344,6 +357,13 @@ declare module '@tanstack/react-router' {
       path: '/collector-dashboard'
       fullPath: '/collector-dashboard'
       preLoaderRoute: typeof CollectorDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recycler-dashboard': {
+      id: '/recycler-dashboard'
+      path: '/recycler-dashboard'
+      fullPath: '/recycler-dashboard'
+      preLoaderRoute: typeof RecyclerDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -577,6 +597,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   CollectorDashboardRoute: CollectorDashboardRoute,
+  RecyclerDashboardRoute: RecyclerDashboardRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
 }
 export const routeTree = rootRouteImport
