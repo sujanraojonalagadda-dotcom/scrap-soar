@@ -122,7 +122,7 @@ function LoginPage() {
             <Recycle className="size-7 text-brand-dark" aria-hidden />
           </span>
           <h1 className="mt-4 text-xl font-bold tracking-tight text-brand-dark">KABADIWALA CONNECT</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Sign in — collector, recycler or admin</p>
+          <p className="mt-1 text-sm text-muted-foreground">Connect. Recycle. Earn.</p>
         </div>
 
         {stage === "phone" ? (
