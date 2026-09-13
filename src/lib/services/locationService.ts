@@ -143,11 +143,9 @@ export async function listNearbyRecyclers(
   material?: string,
   radiusKm?: number,
 ): Promise<NearbyRecycler[]> {
-  const { data, error } = await supabase
-    .from("recyclers")
-    .select("*")
-    .not("latitude", "is", null)
-    .not("longitude", "is", null);
+  // The database returns approximate coordinates only, and only for recyclers
+  // who chose to share their location. Exact addresses stay protected.
+  const { data, error } = await supabase.rpc("recyclers_nearby", { _material: material ?? undefined });
   if (error) throw new Error(error.message);
   interface RecyclerRow {
     id: string;
@@ -155,19 +153,13 @@ export async function listNearbyRecyclers(
     materials: string[] | null;
     rate_per_kg: number | null;
     verified: boolean;
-    address: string | null;
     city: string | null;
     state: string | null;
-    postal_code: string | null;
     location_updated_at: string | null;
-    location_sharing_enabled: boolean;
     latitude: number;
     longitude: number;
   }
-  let rows = (data ?? []) as unknown as RecyclerRow[];
-  if (material) {
-    rows = rows.filter((r) => Array.isArray(r.materials) && r.materials.includes(material));
-  }
+  const rows = (data ?? []) as unknown as RecyclerRow[];
   return rows
     .map((r) => ({
       id: r.id,
@@ -175,12 +167,12 @@ export async function listNearbyRecyclers(
       materials: r.materials ?? [],
       rate_per_kg: r.rate_per_kg,
       verified: r.verified,
-      address: r.address,
+      address: null,
       city: r.city,
       state: r.state,
-      postal_code: r.postal_code,
+      postal_code: null,
       location_updated_at: r.location_updated_at,
-      location_sharing_enabled: r.location_sharing_enabled,
+      location_sharing_enabled: true,
       latitude: Number(r.latitude),
       longitude: Number(r.longitude),
       distanceKm: haversineKm(origin, { latitude: Number(r.latitude), longitude: Number(r.longitude) }),
