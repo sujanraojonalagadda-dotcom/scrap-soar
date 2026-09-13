@@ -10,6 +10,14 @@ export interface Recycler {
   verified: boolean;
   verification_date: string | null;
   created_at: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postal_code?: string | null;
+  location_updated_at?: string | null;
+  location_sharing_enabled?: boolean;
 }
 
 export async function getMyRecycler(userId: string): Promise<Recycler | null> {

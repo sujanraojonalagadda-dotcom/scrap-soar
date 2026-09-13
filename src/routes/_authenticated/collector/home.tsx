@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Laptop, Smartphone, Monitor, Plug, Plus, LogOut, Loader2, History, Camera } from "lucide-react";
+import { Laptop, Smartphone, Monitor, Plug, Plus, LogOut, Loader2, History, Camera, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile, type CollectorProfile } from "@/lib/services/profileService";
 import { signOut } from "@/lib/services/authService";
@@ -105,6 +105,13 @@ function CollectorHome() {
           className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card text-base font-medium text-foreground"
         >
           <Camera className="size-5" aria-hidden /> Identify with a photo
+        </Link>
+
+        <Link
+          to="/collector/nearby"
+          className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card text-base font-medium text-foreground"
+        >
+          <MapPin className="size-5" aria-hidden /> 📍 Nearby recyclers & map
         </Link>
 
         <div className="mt-8 rounded-xl border border-border bg-card p-4">

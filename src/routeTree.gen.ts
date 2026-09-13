@@ -21,9 +21,11 @@ import { Route as AuthenticatedCollectorAddEwasteRouteImport } from './routes/_a
 import { Route as AuthenticatedCollectorHistoryRouteImport } from './routes/_authenticated/collector/history'
 import { Route as AuthenticatedCollectorHomeRouteImport } from './routes/_authenticated/collector/home'
 import { Route as AuthenticatedCollectorIdentifyRouteImport } from './routes/_authenticated/collector/identify'
+import { Route as AuthenticatedCollectorNearbyRouteImport } from './routes/_authenticated/collector/nearby'
 import { Route as AuthenticatedCollectorProfileRouteImport } from './routes/_authenticated/collector/profile'
 import { Route as AuthenticatedCollectorRegisterRouteImport } from './routes/_authenticated/collector/register'
 import { Route as AuthenticatedRecyclerHomeRouteImport } from './routes/_authenticated/recycler/home'
+import { Route as AuthenticatedRecyclerNearbyRouteImport } from './routes/_authenticated/recycler/nearby'
 import { Route as AuthenticatedRecyclerRegisterRouteImport } from './routes/_authenticated/recycler/register'
 import { Route as AuthenticatedRecyclerRequestsRouteImport } from './routes/_authenticated/recycler/requests'
 import { Route as AuthenticatedRecyclerRequestIdRouteImport } from './routes/_authenticated/recycler/request.$id'
@@ -95,6 +97,12 @@ const AuthenticatedCollectorIdentifyRoute =
     path: '/collector/identify',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCollectorNearbyRoute =
+  AuthenticatedCollectorNearbyRouteImport.update({
+    id: '/collector/nearby',
+    path: '/collector/nearby',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCollectorProfileRoute =
   AuthenticatedCollectorProfileRouteImport.update({
     id: '/collector/profile',
@@ -111,6 +119,12 @@ const AuthenticatedRecyclerHomeRoute =
   AuthenticatedRecyclerHomeRouteImport.update({
     id: '/recycler/home',
     path: '/recycler/home',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRecyclerNearbyRoute =
+  AuthenticatedRecyclerNearbyRouteImport.update({
+    id: '/recycler/nearby',
+    path: '/recycler/nearby',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedRecyclerRegisterRoute =
@@ -144,9 +158,11 @@ export interface FileRoutesByFullPath {
   '/collector/history': typeof AuthenticatedCollectorHistoryRoute
   '/collector/home': typeof AuthenticatedCollectorHomeRoute
   '/collector/identify': typeof AuthenticatedCollectorIdentifyRoute
+  '/collector/nearby': typeof AuthenticatedCollectorNearbyRoute
   '/collector/profile': typeof AuthenticatedCollectorProfileRoute
   '/collector/register': typeof AuthenticatedCollectorRegisterRoute
   '/recycler/home': typeof AuthenticatedRecyclerHomeRoute
+  '/recycler/nearby': typeof AuthenticatedRecyclerNearbyRoute
   '/recycler/register': typeof AuthenticatedRecyclerRegisterRoute
   '/recycler/requests': typeof AuthenticatedRecyclerRequestsRoute
   '/recycler/request/$id': typeof AuthenticatedRecyclerRequestIdRoute
@@ -163,9 +179,11 @@ export interface FileRoutesByTo {
   '/collector/history': typeof AuthenticatedCollectorHistoryRoute
   '/collector/home': typeof AuthenticatedCollectorHomeRoute
   '/collector/identify': typeof AuthenticatedCollectorIdentifyRoute
+  '/collector/nearby': typeof AuthenticatedCollectorNearbyRoute
   '/collector/profile': typeof AuthenticatedCollectorProfileRoute
   '/collector/register': typeof AuthenticatedCollectorRegisterRoute
   '/recycler/home': typeof AuthenticatedRecyclerHomeRoute
+  '/recycler/nearby': typeof AuthenticatedRecyclerNearbyRoute
   '/recycler/register': typeof AuthenticatedRecyclerRegisterRoute
   '/recycler/requests': typeof AuthenticatedRecyclerRequestsRoute
   '/recycler/request/$id': typeof AuthenticatedRecyclerRequestIdRoute
@@ -184,9 +202,11 @@ export interface FileRoutesById {
   '/_authenticated/collector/history': typeof AuthenticatedCollectorHistoryRoute
   '/_authenticated/collector/home': typeof AuthenticatedCollectorHomeRoute
   '/_authenticated/collector/identify': typeof AuthenticatedCollectorIdentifyRoute
+  '/_authenticated/collector/nearby': typeof AuthenticatedCollectorNearbyRoute
   '/_authenticated/collector/profile': typeof AuthenticatedCollectorProfileRoute
   '/_authenticated/collector/register': typeof AuthenticatedCollectorRegisterRoute
   '/_authenticated/recycler/home': typeof AuthenticatedRecyclerHomeRoute
+  '/_authenticated/recycler/nearby': typeof AuthenticatedRecyclerNearbyRoute
   '/_authenticated/recycler/register': typeof AuthenticatedRecyclerRegisterRoute
   '/_authenticated/recycler/requests': typeof AuthenticatedRecyclerRequestsRoute
   '/_authenticated/recycler/request/$id': typeof AuthenticatedRecyclerRequestIdRoute
@@ -205,9 +225,11 @@ export interface FileRouteTypes {
     | '/collector/history'
     | '/collector/home'
     | '/collector/identify'
+    | '/collector/nearby'
     | '/collector/profile'
     | '/collector/register'
     | '/recycler/home'
+    | '/recycler/nearby'
     | '/recycler/register'
     | '/recycler/requests'
     | '/recycler/request/$id'
@@ -224,9 +246,11 @@ export interface FileRouteTypes {
     | '/collector/history'
     | '/collector/home'
     | '/collector/identify'
+    | '/collector/nearby'
     | '/collector/profile'
     | '/collector/register'
     | '/recycler/home'
+    | '/recycler/nearby'
     | '/recycler/register'
     | '/recycler/requests'
     | '/recycler/request/$id'
@@ -244,9 +268,11 @@ export interface FileRouteTypes {
     | '/_authenticated/collector/history'
     | '/_authenticated/collector/home'
     | '/_authenticated/collector/identify'
+    | '/_authenticated/collector/nearby'
     | '/_authenticated/collector/profile'
     | '/_authenticated/collector/register'
     | '/_authenticated/recycler/home'
+    | '/_authenticated/recycler/nearby'
     | '/_authenticated/recycler/register'
     | '/_authenticated/recycler/requests'
     | '/_authenticated/recycler/request/$id'
@@ -344,6 +370,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCollectorIdentifyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/collector/nearby': {
+      id: '/_authenticated/collector/nearby'
+      path: '/collector/nearby'
+      fullPath: '/collector/nearby'
+      preLoaderRoute: typeof AuthenticatedCollectorNearbyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/collector/profile': {
       id: '/_authenticated/collector/profile'
       path: '/collector/profile'
@@ -363,6 +396,13 @@ declare module '@tanstack/react-router' {
       path: '/recycler/home'
       fullPath: '/recycler/home'
       preLoaderRoute: typeof AuthenticatedRecyclerHomeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recycler/nearby': {
+      id: '/_authenticated/recycler/nearby'
+      path: '/recycler/nearby'
+      fullPath: '/recycler/nearby'
+      preLoaderRoute: typeof AuthenticatedRecyclerNearbyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/recycler/register': {
@@ -415,9 +455,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCollectorHistoryRoute: typeof AuthenticatedCollectorHistoryRoute
   AuthenticatedCollectorHomeRoute: typeof AuthenticatedCollectorHomeRoute
   AuthenticatedCollectorIdentifyRoute: typeof AuthenticatedCollectorIdentifyRoute
+  AuthenticatedCollectorNearbyRoute: typeof AuthenticatedCollectorNearbyRoute
   AuthenticatedCollectorProfileRoute: typeof AuthenticatedCollectorProfileRoute
   AuthenticatedCollectorRegisterRoute: typeof AuthenticatedCollectorRegisterRoute
   AuthenticatedRecyclerHomeRoute: typeof AuthenticatedRecyclerHomeRoute
+  AuthenticatedRecyclerNearbyRoute: typeof AuthenticatedRecyclerNearbyRoute
   AuthenticatedRecyclerRegisterRoute: typeof AuthenticatedRecyclerRegisterRoute
   AuthenticatedRecyclerRequestsRoute: typeof AuthenticatedRecyclerRequestsRoute
   AuthenticatedRecyclerRequestIdRoute: typeof AuthenticatedRecyclerRequestIdRoute
@@ -429,9 +471,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCollectorHistoryRoute: AuthenticatedCollectorHistoryRoute,
   AuthenticatedCollectorHomeRoute: AuthenticatedCollectorHomeRoute,
   AuthenticatedCollectorIdentifyRoute: AuthenticatedCollectorIdentifyRoute,
+  AuthenticatedCollectorNearbyRoute: AuthenticatedCollectorNearbyRoute,
   AuthenticatedCollectorProfileRoute: AuthenticatedCollectorProfileRoute,
   AuthenticatedCollectorRegisterRoute: AuthenticatedCollectorRegisterRoute,
   AuthenticatedRecyclerHomeRoute: AuthenticatedRecyclerHomeRoute,
+  AuthenticatedRecyclerNearbyRoute: AuthenticatedRecyclerNearbyRoute,
   AuthenticatedRecyclerRegisterRoute: AuthenticatedRecyclerRegisterRoute,
   AuthenticatedRecyclerRequestsRoute: AuthenticatedRecyclerRequestsRoute,
   AuthenticatedRecyclerRequestIdRoute: AuthenticatedRecyclerRequestIdRoute,

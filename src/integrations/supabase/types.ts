@@ -16,37 +16,61 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          address: string | null
+          city: string | null
           created_at: string
           id: string
           language: string
+          latitude: number | null
           location: string | null
+          location_sharing_enabled: boolean
+          location_updated_at: string | null
+          longitude: number | null
           name: string
           phone: string | null
+          postal_code: string | null
           role: string
+          state: string | null
           updated_at: string
           user_id: string
           verified: boolean
         }
         Insert: {
+          address?: string | null
+          city?: string | null
           created_at?: string
           id?: string
           language?: string
+          latitude?: number | null
           location?: string | null
+          location_sharing_enabled?: boolean
+          location_updated_at?: string | null
+          longitude?: number | null
           name: string
           phone?: string | null
+          postal_code?: string | null
           role?: string
+          state?: string | null
           updated_at?: string
           user_id: string
           verified?: boolean
         }
         Update: {
+          address?: string | null
+          city?: string | null
           created_at?: string
           id?: string
           language?: string
+          latitude?: number | null
           location?: string | null
+          location_sharing_enabled?: boolean
+          location_updated_at?: string | null
+          longitude?: number | null
           name?: string
           phone?: string | null
+          postal_code?: string | null
           role?: string
+          state?: string | null
           updated_at?: string
           user_id?: string
           verified?: boolean
@@ -55,36 +79,60 @@ export type Database = {
       }
       recyclers: {
         Row: {
+          address: string | null
+          city: string | null
           created_at: string
           id: string
+          latitude: number | null
           location: string | null
+          location_sharing_enabled: boolean
+          location_updated_at: string | null
+          longitude: number | null
           materials: string[]
           name: string
+          postal_code: string | null
           rate_per_kg: number | null
+          state: string | null
           updated_at: string
           user_id: string
           verification_date: string | null
           verified: boolean
         }
         Insert: {
+          address?: string | null
+          city?: string | null
           created_at?: string
           id?: string
+          latitude?: number | null
           location?: string | null
+          location_sharing_enabled?: boolean
+          location_updated_at?: string | null
+          longitude?: number | null
           materials?: string[]
           name: string
+          postal_code?: string | null
           rate_per_kg?: number | null
+          state?: string | null
           updated_at?: string
           user_id: string
           verification_date?: string | null
           verified?: boolean
         }
         Update: {
+          address?: string | null
+          city?: string | null
           created_at?: string
           id?: string
+          latitude?: number | null
           location?: string | null
+          location_sharing_enabled?: boolean
+          location_updated_at?: string | null
+          longitude?: number | null
           materials?: string[]
           name?: string
+          postal_code?: string | null
           rate_per_kg?: number | null
+          state?: string | null
           updated_at?: string
           user_id?: string
           verification_date?: string | null

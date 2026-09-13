@@ -83,6 +83,9 @@ function RecyclerHome() {
           <Link to="/recycler/requests" className="rounded-lg bg-card px-3 py-2 text-sm font-medium text-foreground">
             Requests
           </Link>
+          <Link to="/recycler/nearby" className="rounded-lg bg-card px-3 py-2 text-sm font-medium text-foreground">
+            🗺️ Map
+          </Link>
           <button
             type="button"
             onClick={handleSignOut}

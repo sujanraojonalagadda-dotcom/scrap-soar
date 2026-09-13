@@ -10,6 +10,14 @@ export interface CollectorProfile {
   location: string | null;
   verified: boolean;
   created_at: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postal_code?: string | null;
+  location_updated_at?: string | null;
+  location_sharing_enabled?: boolean;
 }
 
 export async function getMyProfile(userId: string): Promise<CollectorProfile | null> {
