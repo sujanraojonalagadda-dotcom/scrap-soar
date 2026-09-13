@@ -11,7 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
+import { Route as AuthenticatedAdminCollectorsRouteImport } from './routes/_authenticated/admin/collectors'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as AuthenticatedAdminRecyclersRouteImport } from './routes/_authenticated/admin/recyclers'
+import { Route as AuthenticatedAdminTransactionsRouteImport } from './routes/_authenticated/admin/transactions'
 import { Route as AuthenticatedCollectorAddEwasteRouteImport } from './routes/_authenticated/collector/add-ewaste'
 import { Route as AuthenticatedCollectorHistoryRouteImport } from './routes/_authenticated/collector/history'
 import { Route as AuthenticatedCollectorHomeRouteImport } from './routes/_authenticated/collector/home'
@@ -32,11 +37,40 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   id: '/api/transcribe',
   path: '/api/transcribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminCollectorsRoute =
+  AuthenticatedAdminCollectorsRouteImport.update({
+    id: '/collectors',
+    path: '/collectors',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminRecyclersRoute =
+  AuthenticatedAdminRecyclersRouteImport.update({
+    id: '/recyclers',
+    path: '/recyclers',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminTransactionsRoute =
+  AuthenticatedAdminTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedCollectorAddEwasteRoute =
   AuthenticatedCollectorAddEwasteRouteImport.update({
     id: '/collector/add-ewaste',
@@ -100,7 +134,12 @@ const AuthenticatedRecyclerRequestIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/recyclers': typeof AuthenticatedAdminRecyclersRoute
+  '/admin/transactions': typeof AuthenticatedAdminTransactionsRoute
   '/collector/add-ewaste': typeof AuthenticatedCollectorAddEwasteRoute
   '/collector/history': typeof AuthenticatedCollectorHistoryRoute
   '/collector/home': typeof AuthenticatedCollectorHomeRoute
@@ -114,7 +153,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/recyclers': typeof AuthenticatedAdminRecyclersRoute
+  '/admin/transactions': typeof AuthenticatedAdminTransactionsRoute
   '/collector/add-ewaste': typeof AuthenticatedCollectorAddEwasteRoute
   '/collector/history': typeof AuthenticatedCollectorHistoryRoute
   '/collector/home': typeof AuthenticatedCollectorHomeRoute
@@ -130,7 +174,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
+  '/_authenticated/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
+  '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/recyclers': typeof AuthenticatedAdminRecyclersRoute
+  '/_authenticated/admin/transactions': typeof AuthenticatedAdminTransactionsRoute
   '/_authenticated/collector/add-ewaste': typeof AuthenticatedCollectorAddEwasteRoute
   '/_authenticated/collector/history': typeof AuthenticatedCollectorHistoryRoute
   '/_authenticated/collector/home': typeof AuthenticatedCollectorHomeRoute
@@ -146,7 +195,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/api/transcribe'
+    | '/admin/collectors'
+    | '/admin/dashboard'
+    | '/admin/recyclers'
+    | '/admin/transactions'
     | '/collector/add-ewaste'
     | '/collector/history'
     | '/collector/home'
@@ -160,7 +214,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/api/transcribe'
+    | '/admin/collectors'
+    | '/admin/dashboard'
+    | '/admin/recyclers'
+    | '/admin/transactions'
     | '/collector/add-ewaste'
     | '/collector/history'
     | '/collector/home'
@@ -175,7 +234,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/_authenticated/admin'
     | '/api/transcribe'
+    | '/_authenticated/admin/collectors'
+    | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/recyclers'
+    | '/_authenticated/admin/transactions'
     | '/_authenticated/collector/add-ewaste'
     | '/_authenticated/collector/history'
     | '/_authenticated/collector/home'
@@ -210,12 +274,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/transcribe': {
       id: '/api/transcribe'
       path: '/api/transcribe'
       fullPath: '/api/transcribe'
       preLoaderRoute: typeof ApiTranscribeRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/collectors': {
+      id: '/_authenticated/admin/collectors'
+      path: '/collectors'
+      fullPath: '/admin/collectors'
+      preLoaderRoute: typeof AuthenticatedAdminCollectorsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/recyclers': {
+      id: '/_authenticated/admin/recyclers'
+      path: '/recyclers'
+      fullPath: '/admin/recyclers'
+      preLoaderRoute: typeof AuthenticatedAdminRecyclersRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/transactions': {
+      id: '/_authenticated/admin/transactions'
+      path: '/transactions'
+      fullPath: '/admin/transactions'
+      preLoaderRoute: typeof AuthenticatedAdminTransactionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/collector/add-ewaste': {
       id: '/_authenticated/collector/add-ewaste'
@@ -290,7 +389,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminCollectorsRoute: typeof AuthenticatedAdminCollectorsRoute
+  AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminRecyclersRoute: typeof AuthenticatedAdminRecyclersRoute
+  AuthenticatedAdminTransactionsRoute: typeof AuthenticatedAdminTransactionsRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminCollectorsRoute: AuthenticatedAdminCollectorsRoute,
+    AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+    AuthenticatedAdminRecyclersRoute: AuthenticatedAdminRecyclersRoute,
+    AuthenticatedAdminTransactionsRoute: AuthenticatedAdminTransactionsRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedCollectorAddEwasteRoute: typeof AuthenticatedCollectorAddEwasteRoute
   AuthenticatedCollectorHistoryRoute: typeof AuthenticatedCollectorHistoryRoute
   AuthenticatedCollectorHomeRoute: typeof AuthenticatedCollectorHomeRoute
@@ -304,6 +424,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedCollectorAddEwasteRoute: AuthenticatedCollectorAddEwasteRoute,
   AuthenticatedCollectorHistoryRoute: AuthenticatedCollectorHistoryRoute,
   AuthenticatedCollectorHomeRoute: AuthenticatedCollectorHomeRoute,
