@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { MapPin, Navigation } from "lucide-react";
 import { MapView, type MapMarker } from "@/components/MapView";
-import { getRecyclerExactLocation, directionsUrl, type RecyclerExactLocation } from "@/lib/services/recyclerLocationService";
-import { getCurrentPosition, haversineKm, formatDistance, isValidCoordinate } from "@/lib/services/locationService";
+import { getRecyclerExactLocation, type RecyclerExactLocation } from "@/lib/services/recyclerLocationService";
+import { directionsUrl, getCurrentPosition, haversineKm, formatDistance, isValidCoordinate } from "@/lib/services/locationService";
 
 /**
  * Shown to the collector once the sale is accepted. The exact address and
@@ -30,7 +30,11 @@ export function RecyclerLocationCard({ recyclerId, verified }: { recyclerId: str
 
   if (!loaded) return null;
 
-  const hasCoords = !!location && isValidCoordinate(location.latitude, location.longitude);
+  const hasCoords =
+    !!location &&
+    typeof location.latitude === "number" &&
+    typeof location.longitude === "number" &&
+    isValidCoordinate(location.latitude, location.longitude);
   const addressParts = [location?.address, location?.city, location?.state, location?.postal_code].filter(Boolean);
   const distance =
     hasCoords && mine
@@ -82,7 +86,7 @@ export function RecyclerLocationCard({ recyclerId, verified }: { recyclerId: str
               {showMap ? "Hide map" : "View on map"}
             </button>
             <a
-              href={directionsUrl(location!.latitude!, location!.longitude!)}
+              href={directionsUrl({ latitude: location!.latitude!, longitude: location!.longitude! }, location!.name)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex h-11 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground"

@@ -22,8 +22,3 @@ export async function getRecyclerExactLocation(recyclerId: string): Promise<Recy
   const rows = (data ?? []) as RecyclerExactLocation[];
   return rows[0] ?? null;
 }
-
-/** Opens the device's preferred maps app with the recycler as destination. */
-export function directionsUrl(latitude: number, longitude: number): string {
-  return `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
-}
