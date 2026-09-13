@@ -6,7 +6,6 @@ import {
   getCurrentPosition,
   isValidCoordinate,
   type GeoPoint,
-  type LocationDetails,
 } from "@/lib/services/locationService";
 
 export interface SavedLocationLike {
