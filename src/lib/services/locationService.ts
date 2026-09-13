@@ -138,7 +138,11 @@ export async function saveRecyclerLocation(recyclerId: string, input: SaveLocati
 }
 
 /** Authorized (verified) recyclers with a location, sorted by distance from `origin`. */
-export async function listNearbyRecyclers(origin: GeoPoint, material?: string): Promise<NearbyRecycler[]> {
+export async function listNearbyRecyclers(
+  origin: GeoPoint,
+  material?: string,
+  radiusKm?: number,
+): Promise<NearbyRecycler[]> {
   const { data, error } = await supabase
     .from("recyclers")
     .select("*")
@@ -181,6 +185,7 @@ export async function listNearbyRecyclers(origin: GeoPoint, material?: string): 
       longitude: Number(r.longitude),
       distanceKm: haversineKm(origin, { latitude: Number(r.latitude), longitude: Number(r.longitude) }),
     }))
+    .filter((r) => (radiusKm == null ? true : r.distanceKm <= radiusKm))
     .sort((a, b) => a.distanceKm - b.distanceKm);
 }
 
