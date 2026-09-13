@@ -37,16 +37,49 @@ export const VERIFICATION_LABEL: Record<VerificationStatus, string> = {
   changes_requested: "Changes requested",
 };
 
-export async function getMyRecycler(userId: string): Promise<Recycler | null> {
-  const { data, error } = await supabase.from("recyclers").select("*").eq("user_id", userId).maybeSingle();
+/**
+ * Columns every signed-in user may read. Contact person, phone, registration
+ * number, exact address and coordinates are withheld by the database and are
+ * only released through `getRecyclerPrivateDetails` to authorised users.
+ */
+const SAFE_COLUMNS =
+  "id,user_id,name,location,materials,rate_per_kg,verified,verification_date,verification_status,operating_area,description,business_hours,city,state,location_sharing_enabled,location_updated_at,created_at,updated_at";
+
+export interface RecyclerPrivateDetails {
+  contact_person: string | null;
+  contact_phone: string | null;
+  registration_number: string | null;
+  verification_note: string | null;
+  address: string | null;
+  postal_code: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+/**
+ * Private organisation details. The database returns them only to the recycler
+ * itself, an admin, or a collector whose sale to that recycler was accepted.
+ */
+export async function getRecyclerPrivateDetails(recyclerId: string): Promise<RecyclerPrivateDetails | null> {
+  const { data, error } = await supabase.rpc("recycler_private_details", { _recycler_id: recyclerId });
   if (error) throw new Error(error.message);
-  return (data as Recycler | null) ?? null;
+  const rows = (data ?? []) as RecyclerPrivateDetails[];
+  return rows[0] ?? null;
+}
+
+export async function getMyRecycler(userId: string): Promise<Recycler | null> {
+  const { data, error } = await supabase.from("recyclers").select(SAFE_COLUMNS).eq("user_id", userId).maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  const base = data as unknown as Recycler;
+  const priv = await getRecyclerPrivateDetails(base.id).catch(() => null);
+  return { ...base, ...(priv ?? {}) } as Recycler;
 }
 
 export async function getRecyclerById(id: string): Promise<Recycler | null> {
-  const { data, error } = await supabase.from("recyclers").select("*").eq("id", id).maybeSingle();
+  const { data, error } = await supabase.from("recyclers").select(SAFE_COLUMNS).eq("id", id).maybeSingle();
   if (error) throw new Error(error.message);
-  return (data as Recycler | null) ?? null;
+  return (data as unknown as Recycler | null) ?? null;
 }
 
 export interface OrganisationInput {
