@@ -24,18 +24,23 @@ export interface Pickup {
   created_at: string;
 }
 
-export async function createPickup(input: {
+export interface CreatePickupInput {
+  id?: string;
   collectorId: string;
   recyclerId: string | null;
   category: string;
   weightKg: number;
   condition: string;
   indicativePrice: number | null;
-}): Promise<Pickup> {
-  const handoverCode = String(Math.floor(100000 + Math.random() * 900000));
+  handoverCode?: string;
+}
+
+export async function createPickup(input: CreatePickupInput): Promise<Pickup> {
+  const handoverCode = input.handoverCode ?? String(Math.floor(100000 + Math.random() * 900000));
   const { data, error } = await supabase
     .from("transactions")
     .insert({
+      ...(input.id ? { id: input.id } : {}),
       collector_id: input.collectorId,
       recycler_id: input.recyclerId,
       category: input.category,
@@ -46,6 +51,10 @@ export async function createPickup(input: {
     })
     .select()
     .single();
+  if (error && input.id && error.code === "23505") {
+    const existing = await getPickup(input.id);
+    if (existing) return existing;
+  }
   if (error) throw new Error(error.message);
   return data as Pickup;
 }
