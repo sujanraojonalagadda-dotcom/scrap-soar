@@ -144,22 +144,40 @@ function NearbyRecyclersPage() {
           <>
             <MapView center={origin} zoom={12} height={300} markers={markers} selectedId={selectedId} />
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-sm font-semibold text-foreground">Authorized recyclers</h2>
-              <select
-                aria-label="Filter by material"
-                value={material}
-                onChange={(e) => setMaterial(e.target.value)}
-                className="h-10 rounded-lg border border-border bg-card px-2 text-sm capitalize text-foreground"
-              >
-                <option value="">All materials</option>
-                {MATERIAL_FILTERS.map((m) => (
-                  <option key={m} value={m} className="capitalize">
-                    {m}
-                  </option>
-                ))}
-              </select>
+              <div className="flex gap-2">
+                <select
+                  aria-label="Search distance"
+                  value={radiusKm}
+                  onChange={(e) => setRadiusKm(Number(e.target.value))}
+                  className="h-10 rounded-lg border border-border bg-card px-2 text-sm text-foreground"
+                >
+                  {[5, 10, 25, 50, 100].map((km) => (
+                    <option key={km} value={km}>
+                      Within {km} km
+                    </option>
+                  ))}
+                </select>
+                <select
+                  aria-label="Filter by material"
+                  value={material}
+                  onChange={(e) => setMaterial(e.target.value)}
+                  className="h-10 rounded-lg border border-border bg-card px-2 text-sm capitalize text-foreground"
+                >
+                  <option value="">All materials</option>
+                  {MATERIAL_FILTERS.map((m) => (
+                    <option key={m} value={m} className="capitalize">
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
+            {error && (
+              <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
+            )}
 
             {loading ? (
               <div className="flex justify-center py-6">
@@ -167,7 +185,8 @@ function NearbyRecyclersPage() {
               </div>
             ) : recyclers.length === 0 ? (
               <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
-                No recyclers with a saved location found{material ? ` for ${material}` : ""} yet.
+                No recyclers with a saved location found within {radiusKm} km
+                {material ? ` for ${material}` : ""} yet.
               </p>
             ) : (
               <ul className="space-y-3">
