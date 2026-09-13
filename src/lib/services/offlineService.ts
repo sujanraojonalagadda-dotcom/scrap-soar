@@ -60,11 +60,11 @@ export async function syncQueuedPickups(userId: string): Promise<number> {
       remaining.shift();
       synced += 1;
       window.localStorage.setItem(`${QUEUE_PREFIX}${userId}`, JSON.stringify(remaining));
-      window.dispatchEvent(new CustomEvent("kc:queue-changed"));
     } catch {
       break;
     }
   }
+  if (synced > 0) window.dispatchEvent(new CustomEvent("kc:queue-synced"));
   return synced;
 }
 

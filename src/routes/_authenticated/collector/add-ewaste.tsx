@@ -53,6 +53,7 @@ function AddEWaste() {
   const [voiceSupported, setVoiceSupported] = useState(false);
   const [transcript, setTranscript] = useState<string | null>(null);
   const [recognition, setRecognition] = useState<{ start: () => void; stop: () => void } | null>(null);
+  const [online, setOnline] = useState(true);
 
   useEffect(() => {
     const SpeechRecognition = (window as unknown as {
@@ -76,6 +77,10 @@ function AddEWaste() {
       };
     }).SpeechRecognition ?? (window as unknown as { webkitSpeechRecognition?: new () => any }).webkitSpeechRecognition;
     setVoiceSupported(Boolean(SpeechRecognition));
+    setOnline(navigator.onLine);
+    const updateOnline = () => setOnline(navigator.onLine);
+    window.addEventListener("online", updateOnline);
+    window.addEventListener("offline", updateOnline);
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) return;
       setUserId(data.user.id);
@@ -87,7 +92,7 @@ function AddEWaste() {
         setRecyclerId(draft.recyclerId);
       }
     });
-    listRecyclers()
+    void listRecyclers()
       .then((list) => {
         setRecyclers(list);
         cacheRecyclers(list);
@@ -99,6 +104,10 @@ function AddEWaste() {
         setRecyclerId((current) => current ?? cached[0]?.id ?? null);
       })
       .finally(() => setLoading(false));
+    return () => {
+      window.removeEventListener("online", updateOnline);
+      window.removeEventListener("offline", updateOnline);
+    };
   }, []);
 
   useEffect(() => {
@@ -158,7 +167,7 @@ function AddEWaste() {
     const next = new Recognition();
     next.lang = language === "hi" ? "hi-IN" : "en-IN";
     next.interimResults = false;
-    next.onresult = (event: { results: { 0: { 0: { transcript: string } } }[] }) => {
+    next.onresult = (event: { results: ArrayLike<{ 0?: { transcript?: string } }> }) => {
       const spoken = event.results[0]?.[0]?.transcript ?? "";
       setTranscript(spoken);
       const parsed = parsePickupSpeech(spoken);
@@ -318,7 +327,7 @@ function AddEWaste() {
           className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground disabled:opacity-50"
         >
           {busy && <Loader2 className="size-4 animate-spin" aria-hidden />}
-          {typeof navigator !== "undefined" && !navigator.onLine ? "SAVE FOR SYNC" : "SEND TO RECYCLER"}
+          {!online ? "SAVE FOR SYNC" : "SEND TO RECYCLER"}
         </button>
         {error && (
           <p role="alert" className="rounded-lg border border-destructive/30 bg-card px-3 py-2 text-sm text-destructive">

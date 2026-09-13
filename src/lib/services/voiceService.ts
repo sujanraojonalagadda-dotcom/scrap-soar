@@ -33,7 +33,12 @@ export function parsePickupSpeech(transcript: string): {
   if (/partially working|partial|आंशिक|थोड़ा काम/.test(normalized)) condition = "partially_working";
   else if (/not working|broken|खराब|काम नहीं/.test(normalized)) condition = "not_working";
   else if (/working|चालू|काम करता/.test(normalized)) condition = "working";
-  return { category, weight: numeric ?? (wordWeight ? String(wordWeight) : undefined), condition };
+  const parsed: { category?: string; weight?: string; condition?: Condition } = {};
+  if (category) parsed.category = category;
+  if (numeric) parsed.weight = numeric;
+  else if (wordWeight) parsed.weight = String(wordWeight);
+  if (condition) parsed.condition = condition;
+  return parsed;
 }
 
 export function speakPrice(price: number | null, language: "en" | "hi") {

@@ -26,12 +26,25 @@ function HistoryPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
+    let userId: string | null = null;
+    const load = async () => {
+      const { data } = await supabase.auth.getUser();
       if (!data.user) return;
+      userId = data.user.id;
       setQueued(listQueuedPickups(data.user.id));
       setPickups(await listCollectorPickups(data.user.id).catch(() => []));
       setLoading(false);
-    });
+    };
+    const refreshQueued = () => {
+      if (userId) setQueued(listQueuedPickups(userId));
+    };
+    window.addEventListener("kc:queue-changed", refreshQueued);
+    window.addEventListener("kc:queue-synced", load);
+    void load();
+    return () => {
+      window.removeEventListener("kc:queue-changed", refreshQueued);
+      window.removeEventListener("kc:queue-synced", load);
+    };
   }, []);
 
   return (
