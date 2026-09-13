@@ -117,7 +117,7 @@ function RecyclerHome() {
         )}
 
         <div className="mt-5 grid gap-3 sm:grid-cols-4">
-          <Stat label="Awaiting your accept" value={pending} />
+          <Stat label="Purchase accepted" value={pending} />
           <Stat label="In progress" value={inProgress} />
           <Stat label="Completed" value={completed} />
           <Stat label="Paid out" value={formatRupees(paidTotal)} />

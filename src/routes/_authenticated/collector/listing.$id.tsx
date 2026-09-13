@@ -346,7 +346,7 @@ function ListingDetail() {
           </article>
         )}
 
-        {listing.status === "recycler_selected" && (
+        {listing.status === "sale_accepted" && (
           <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
             Waiting for {selected?.name ?? "the recycler"} to accept the collection request.
           </p>

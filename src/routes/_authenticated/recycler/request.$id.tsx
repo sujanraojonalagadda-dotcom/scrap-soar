@@ -155,9 +155,9 @@ function RequestDetail() {
           {listing.notes && <p className="mt-2 text-sm text-muted-foreground">Notes: {listing.notes}</p>}
         </article>
 
-        {listing.status === "recycler_selected" && (
+        {listing.status === "sale_accepted" && (
           <article className="rounded-xl border border-border bg-card p-4">
-            <h2 className="font-semibold text-foreground">Collector accepted your offer</h2>
+            <h2 className="font-semibold text-foreground">Purchase accepted — schedule pickup</h2>
             <label htmlFor="pd" className="mt-3 mb-1.5 block text-sm font-medium text-foreground">
               Pickup date
             </label>
