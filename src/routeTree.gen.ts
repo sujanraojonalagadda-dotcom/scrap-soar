@@ -11,7 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AdminDashboardRouteImport } from './routes/admin-dashboard'
+import { Route as CollectorDashboardRouteImport } from './routes/collector-dashboard'
+import { Route as RecyclerDashboardRouteImport } from './routes/recycler-dashboard'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedCollectorRouteRouteImport } from './routes/_authenticated/collector/route'
+import { Route as AuthenticatedRecyclerRouteRouteImport } from './routes/_authenticated/recycler/route'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as AuthenticatedAdminCollectorsRouteImport } from './routes/_authenticated/admin/collectors'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
@@ -39,11 +44,38 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/admin-dashboard',
+  path: '/admin-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectorDashboardRoute = CollectorDashboardRouteImport.update({
+  id: '/collector-dashboard',
+  path: '/collector-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecyclerDashboardRoute = RecyclerDashboardRouteImport.update({
+  id: '/recycler-dashboard',
+  path: '/recycler-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCollectorRouteRoute =
+  AuthenticatedCollectorRouteRouteImport.update({
+    id: '/collector',
+    path: '/collector',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRecyclerRouteRoute =
+  AuthenticatedRecyclerRouteRouteImport.update({
+    id: '/recycler',
+    path: '/recycler',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   id: '/api/transcribe',
   path: '/api/transcribe',
@@ -75,80 +107,85 @@ const AuthenticatedAdminTransactionsRoute =
   } as any)
 const AuthenticatedCollectorAddEwasteRoute =
   AuthenticatedCollectorAddEwasteRouteImport.update({
-    id: '/collector/add-ewaste',
-    path: '/collector/add-ewaste',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/add-ewaste',
+    path: '/add-ewaste',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorHistoryRoute =
   AuthenticatedCollectorHistoryRouteImport.update({
-    id: '/collector/history',
-    path: '/collector/history',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorHomeRoute =
   AuthenticatedCollectorHomeRouteImport.update({
-    id: '/collector/home',
-    path: '/collector/home',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/home',
+    path: '/home',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorIdentifyRoute =
   AuthenticatedCollectorIdentifyRouteImport.update({
-    id: '/collector/identify',
-    path: '/collector/identify',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/identify',
+    path: '/identify',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorNearbyRoute =
   AuthenticatedCollectorNearbyRouteImport.update({
-    id: '/collector/nearby',
-    path: '/collector/nearby',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/nearby',
+    path: '/nearby',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorProfileRoute =
   AuthenticatedCollectorProfileRouteImport.update({
-    id: '/collector/profile',
-    path: '/collector/profile',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorRegisterRoute =
   AuthenticatedCollectorRegisterRouteImport.update({
-    id: '/collector/register',
-    path: '/collector/register',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/register',
+    path: '/register',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedRecyclerHomeRoute =
   AuthenticatedRecyclerHomeRouteImport.update({
-    id: '/recycler/home',
-    path: '/recycler/home',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/home',
+    path: '/home',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 const AuthenticatedRecyclerNearbyRoute =
   AuthenticatedRecyclerNearbyRouteImport.update({
-    id: '/recycler/nearby',
-    path: '/recycler/nearby',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/nearby',
+    path: '/nearby',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 const AuthenticatedRecyclerRegisterRoute =
   AuthenticatedRecyclerRegisterRouteImport.update({
-    id: '/recycler/register',
-    path: '/recycler/register',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/register',
+    path: '/register',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 const AuthenticatedRecyclerRequestsRoute =
   AuthenticatedRecyclerRequestsRouteImport.update({
-    id: '/recycler/requests',
-    path: '/recycler/requests',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/requests',
+    path: '/requests',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 const AuthenticatedRecyclerRequestIdRoute =
   AuthenticatedRecyclerRequestIdRouteImport.update({
-    id: '/recycler/request/$id',
-    path: '/recycler/request/$id',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/request/$id',
+    path: '/request/$id',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin-dashboard': typeof AdminDashboardRoute
+  '/collector-dashboard': typeof CollectorDashboardRoute
+  '/recycler-dashboard': typeof RecyclerDashboardRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
+  '/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
   '/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -169,7 +206,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin-dashboard': typeof AdminDashboardRoute
+  '/collector-dashboard': typeof CollectorDashboardRoute
+  '/recycler-dashboard': typeof RecyclerDashboardRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
+  '/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
   '/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -192,7 +234,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin-dashboard': typeof AdminDashboardRoute
+  '/collector-dashboard': typeof CollectorDashboardRoute
+  '/recycler-dashboard': typeof RecyclerDashboardRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
+  '/_authenticated/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
   '/_authenticated/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -215,7 +262,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin-dashboard'
+    | '/collector-dashboard'
+    | '/recycler-dashboard'
     | '/admin'
+    | '/collector'
+    | '/recycler'
     | '/api/transcribe'
     | '/admin/collectors'
     | '/admin/dashboard'
@@ -236,7 +288,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin-dashboard'
+    | '/collector-dashboard'
+    | '/recycler-dashboard'
     | '/admin'
+    | '/collector'
+    | '/recycler'
     | '/api/transcribe'
     | '/admin/collectors'
     | '/admin/dashboard'
@@ -258,7 +315,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/admin-dashboard'
+    | '/collector-dashboard'
+    | '/recycler-dashboard'
     | '/_authenticated/admin'
+    | '/_authenticated/collector'
+    | '/_authenticated/recycler'
     | '/api/transcribe'
     | '/_authenticated/admin/collectors'
     | '/_authenticated/admin/dashboard'
@@ -281,6 +343,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  CollectorDashboardRoute: typeof CollectorDashboardRoute
+  RecyclerDashboardRoute: typeof RecyclerDashboardRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
 }
 
@@ -300,11 +365,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-dashboard': {
+      id: '/admin-dashboard'
+      path: '/admin-dashboard'
+      fullPath: '/admin-dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collector-dashboard': {
+      id: '/collector-dashboard'
+      path: '/collector-dashboard'
+      fullPath: '/collector-dashboard'
+      preLoaderRoute: typeof CollectorDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recycler-dashboard': {
+      id: '/recycler-dashboard'
+      path: '/recycler-dashboard'
+      fullPath: '/recycler-dashboard'
+      preLoaderRoute: typeof RecyclerDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/collector': {
+      id: '/_authenticated/collector'
+      path: '/collector'
+      fullPath: '/collector'
+      preLoaderRoute: typeof AuthenticatedCollectorRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recycler': {
+      id: '/_authenticated/recycler'
+      path: '/recycler'
+      fullPath: '/recycler'
+      preLoaderRoute: typeof AuthenticatedRecyclerRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/transcribe': {
@@ -344,87 +444,87 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/collector/add-ewaste': {
       id: '/_authenticated/collector/add-ewaste'
-      path: '/collector/add-ewaste'
+      path: '/add-ewaste'
       fullPath: '/collector/add-ewaste'
       preLoaderRoute: typeof AuthenticatedCollectorAddEwasteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/history': {
       id: '/_authenticated/collector/history'
-      path: '/collector/history'
+      path: '/history'
       fullPath: '/collector/history'
       preLoaderRoute: typeof AuthenticatedCollectorHistoryRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/home': {
       id: '/_authenticated/collector/home'
-      path: '/collector/home'
+      path: '/home'
       fullPath: '/collector/home'
       preLoaderRoute: typeof AuthenticatedCollectorHomeRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/identify': {
       id: '/_authenticated/collector/identify'
-      path: '/collector/identify'
+      path: '/identify'
       fullPath: '/collector/identify'
       preLoaderRoute: typeof AuthenticatedCollectorIdentifyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/nearby': {
       id: '/_authenticated/collector/nearby'
-      path: '/collector/nearby'
+      path: '/nearby'
       fullPath: '/collector/nearby'
       preLoaderRoute: typeof AuthenticatedCollectorNearbyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/profile': {
       id: '/_authenticated/collector/profile'
-      path: '/collector/profile'
+      path: '/profile'
       fullPath: '/collector/profile'
       preLoaderRoute: typeof AuthenticatedCollectorProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/register': {
       id: '/_authenticated/collector/register'
-      path: '/collector/register'
+      path: '/register'
       fullPath: '/collector/register'
       preLoaderRoute: typeof AuthenticatedCollectorRegisterRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/recycler/home': {
       id: '/_authenticated/recycler/home'
-      path: '/recycler/home'
+      path: '/home'
       fullPath: '/recycler/home'
       preLoaderRoute: typeof AuthenticatedRecyclerHomeRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
     '/_authenticated/recycler/nearby': {
       id: '/_authenticated/recycler/nearby'
-      path: '/recycler/nearby'
+      path: '/nearby'
       fullPath: '/recycler/nearby'
       preLoaderRoute: typeof AuthenticatedRecyclerNearbyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
     '/_authenticated/recycler/register': {
       id: '/_authenticated/recycler/register'
-      path: '/recycler/register'
+      path: '/register'
       fullPath: '/recycler/register'
       preLoaderRoute: typeof AuthenticatedRecyclerRegisterRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
     '/_authenticated/recycler/requests': {
       id: '/_authenticated/recycler/requests'
-      path: '/recycler/requests'
+      path: '/requests'
       fullPath: '/recycler/requests'
       preLoaderRoute: typeof AuthenticatedRecyclerRequestsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
     '/_authenticated/recycler/request/$id': {
       id: '/_authenticated/recycler/request/$id'
-      path: '/recycler/request/$id'
+      path: '/request/$id'
       fullPath: '/recycler/request/$id'
       preLoaderRoute: typeof AuthenticatedRecyclerRequestIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
   }
 }
@@ -449,8 +549,7 @@ const AuthenticatedAdminRouteRouteWithChildren =
     AuthenticatedAdminRouteRouteChildren,
   )
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+interface AuthenticatedCollectorRouteRouteChildren {
   AuthenticatedCollectorAddEwasteRoute: typeof AuthenticatedCollectorAddEwasteRoute
   AuthenticatedCollectorHistoryRoute: typeof AuthenticatedCollectorHistoryRoute
   AuthenticatedCollectorHomeRoute: typeof AuthenticatedCollectorHomeRoute
@@ -458,6 +557,25 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCollectorNearbyRoute: typeof AuthenticatedCollectorNearbyRoute
   AuthenticatedCollectorProfileRoute: typeof AuthenticatedCollectorProfileRoute
   AuthenticatedCollectorRegisterRoute: typeof AuthenticatedCollectorRegisterRoute
+}
+
+const AuthenticatedCollectorRouteRouteChildren: AuthenticatedCollectorRouteRouteChildren =
+  {
+    AuthenticatedCollectorAddEwasteRoute: AuthenticatedCollectorAddEwasteRoute,
+    AuthenticatedCollectorHistoryRoute: AuthenticatedCollectorHistoryRoute,
+    AuthenticatedCollectorHomeRoute: AuthenticatedCollectorHomeRoute,
+    AuthenticatedCollectorIdentifyRoute: AuthenticatedCollectorIdentifyRoute,
+    AuthenticatedCollectorNearbyRoute: AuthenticatedCollectorNearbyRoute,
+    AuthenticatedCollectorProfileRoute: AuthenticatedCollectorProfileRoute,
+    AuthenticatedCollectorRegisterRoute: AuthenticatedCollectorRegisterRoute,
+  }
+
+const AuthenticatedCollectorRouteRouteWithChildren =
+  AuthenticatedCollectorRouteRoute._addFileChildren(
+    AuthenticatedCollectorRouteRouteChildren,
+  )
+
+interface AuthenticatedRecyclerRouteRouteChildren {
   AuthenticatedRecyclerHomeRoute: typeof AuthenticatedRecyclerHomeRoute
   AuthenticatedRecyclerNearbyRoute: typeof AuthenticatedRecyclerNearbyRoute
   AuthenticatedRecyclerRegisterRoute: typeof AuthenticatedRecyclerRegisterRoute
@@ -465,20 +583,31 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRecyclerRequestIdRoute: typeof AuthenticatedRecyclerRequestIdRoute
 }
 
+const AuthenticatedRecyclerRouteRouteChildren: AuthenticatedRecyclerRouteRouteChildren =
+  {
+    AuthenticatedRecyclerHomeRoute: AuthenticatedRecyclerHomeRoute,
+    AuthenticatedRecyclerNearbyRoute: AuthenticatedRecyclerNearbyRoute,
+    AuthenticatedRecyclerRegisterRoute: AuthenticatedRecyclerRegisterRoute,
+    AuthenticatedRecyclerRequestsRoute: AuthenticatedRecyclerRequestsRoute,
+    AuthenticatedRecyclerRequestIdRoute: AuthenticatedRecyclerRequestIdRoute,
+  }
+
+const AuthenticatedRecyclerRouteRouteWithChildren =
+  AuthenticatedRecyclerRouteRoute._addFileChildren(
+    AuthenticatedRecyclerRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedCollectorRouteRoute: typeof AuthenticatedCollectorRouteRouteWithChildren
+  AuthenticatedRecyclerRouteRoute: typeof AuthenticatedRecyclerRouteRouteWithChildren
+}
+
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
-  AuthenticatedCollectorAddEwasteRoute: AuthenticatedCollectorAddEwasteRoute,
-  AuthenticatedCollectorHistoryRoute: AuthenticatedCollectorHistoryRoute,
-  AuthenticatedCollectorHomeRoute: AuthenticatedCollectorHomeRoute,
-  AuthenticatedCollectorIdentifyRoute: AuthenticatedCollectorIdentifyRoute,
-  AuthenticatedCollectorNearbyRoute: AuthenticatedCollectorNearbyRoute,
-  AuthenticatedCollectorProfileRoute: AuthenticatedCollectorProfileRoute,
-  AuthenticatedCollectorRegisterRoute: AuthenticatedCollectorRegisterRoute,
-  AuthenticatedRecyclerHomeRoute: AuthenticatedRecyclerHomeRoute,
-  AuthenticatedRecyclerNearbyRoute: AuthenticatedRecyclerNearbyRoute,
-  AuthenticatedRecyclerRegisterRoute: AuthenticatedRecyclerRegisterRoute,
-  AuthenticatedRecyclerRequestsRoute: AuthenticatedRecyclerRequestsRoute,
-  AuthenticatedRecyclerRequestIdRoute: AuthenticatedRecyclerRequestIdRoute,
+  AuthenticatedCollectorRouteRoute:
+    AuthenticatedCollectorRouteRouteWithChildren,
+  AuthenticatedRecyclerRouteRoute: AuthenticatedRecyclerRouteRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -487,6 +616,9 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminDashboardRoute: AdminDashboardRoute,
+  CollectorDashboardRoute: CollectorDashboardRoute,
+  RecyclerDashboardRoute: RecyclerDashboardRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,
 }
 export const routeTree = rootRouteImport
