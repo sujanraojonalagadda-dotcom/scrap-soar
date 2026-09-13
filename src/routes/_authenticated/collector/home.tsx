@@ -4,6 +4,12 @@ import { Laptop, Smartphone, Monitor, Plug, Plus, LogOut, Loader2, History, Came
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile, type CollectorProfile } from "@/lib/services/profileService";
 import { signOut } from "@/lib/services/authService";
+import { NotificationBell } from "@/components/NotificationBell";
+import { listCollectorPickups, STATUS_LABEL, statusTone, type Pickup } from "@/lib/services/transactionService";
+import { listRecyclers, type Recycler } from "@/lib/services/recyclerService";
+import { formatRupees } from "@/lib/services/priceService";
+
+const ACTIVE_SALE_STATUSES = ["sale_accepted", "pickup_scheduled", "handed_over", "recycler_confirmed"];
 
 export const Route = createFileRoute("/_authenticated/collector/home")({
   head: () => ({
@@ -31,6 +37,9 @@ function CollectorHome() {
   const [profile, setProfile] = useState<CollectorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [listings, setListings] = useState<Pickup[]>([]);
+  const [recyclers, setRecyclers] = useState<Recycler[]>([]);
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -41,6 +50,9 @@ function CollectorHome() {
         return;
       }
       setProfile(p);
+      setUserId(data.user.id);
+      setListings(await listCollectorPickups(data.user.id).catch(() => []));
+      setRecyclers(await listRecyclers().catch(() => []));
       setLoading(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,10 +71,15 @@ function CollectorHome() {
     );
   }
 
+  const requested = listings.filter((item) => item.status === "purchase_requested");
+  const activeSales = listings.filter((item) => ACTIVE_SALE_STATUSES.includes(item.status));
+
   return (
     <main className="min-h-screen bg-muted pb-10">
       <header className="flex items-center justify-between bg-card px-4 py-4 shadow-sm">
         <h1 className="text-lg font-bold text-foreground">Hello, {profile?.name} 👋</h1>
+        <div className="flex items-center gap-2">
+        <NotificationBell userId={userId} />
         <button
           type="button"
           onClick={handleSignOut}
@@ -70,7 +87,67 @@ function CollectorHome() {
         >
           <LogOut className="size-4" aria-hidden /> Log out
         </button>
+        </div>
       </header>
+
+      {requested.length > 0 && (
+        <section className="px-4 pt-4">
+          <div className="rounded-xl border border-warning bg-warning-light p-4">
+            <h2 className="text-sm font-semibold text-warning-dark">🔔 New recycler requests</h2>
+            <ul className="mt-2 space-y-2">
+              {requested.map((item) => (
+                <li key={item.id} className="text-sm text-warning-dark">
+                  <span className="font-medium capitalize">{item.category}</span> · {Number(item.weight_kg)} kg ·{" "}
+                  <Link to="/collector/listing/$id" params={{ id: item.id }} className="underline">
+                    View details
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {activeSales.length > 0 && (
+        <section className="px-4 pt-4">
+          <h2 className="text-base font-semibold text-foreground">Active sale</h2>
+          <ul className="mt-3 space-y-3">
+            {activeSales.map((item) => {
+              const buyer = recyclers.find((r) => r.id === item.recycler_id);
+              return (
+                <li key={item.id} className="rounded-xl border border-border bg-card p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs text-muted-foreground">{item.listing_code}</p>
+                      <p className="font-medium capitalize text-foreground">{item.category}</p>
+                      <p className="text-sm text-muted-foreground">{Number(item.weight_kg)} kg</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Buyer: {buyer?.name ?? "Recycler"}
+                        {buyer?.verified && <span className="ml-1 text-xs font-semibold text-brand-dark">✓ VERIFIED</span>}
+                      </p>
+                      {item.agreed_price_per_kg && (
+                        <p className="text-sm text-muted-foreground">
+                          ₹{Number(item.agreed_price_per_kg)}/kg · {formatRupees(item.indicative_price)}
+                        </p>
+                      )}
+                    </div>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${statusTone(item.status)}`}>
+                      {STATUS_LABEL[item.status]}
+                    </span>
+                  </div>
+                  <Link
+                    to="/collector/listing/$id"
+                    params={{ id: item.id }}
+                    className="mt-3 inline-flex h-11 items-center rounded-lg border border-border px-4 text-sm font-medium text-foreground"
+                  >
+                    View recycler, map & directions
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       <section className="px-4 pt-6">
         <h2 className="text-base font-semibold text-foreground">What are you collecting?</h2>
@@ -121,7 +198,21 @@ function CollectorHome() {
               <History className="size-4" aria-hidden /> History
             </Link>
           </div>
-          <p className="mt-3 text-sm text-muted-foreground">No pickups recorded yet.</p>
+          {listings.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">No pickups recorded yet.</p>
+          ) : (
+            <ul className="mt-3 divide-y divide-border">
+              {listings.slice(0, 3).map((item) => (
+                <li key={item.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                  <span className="font-medium capitalize text-foreground">{item.category}</span>
+                  <span className="text-muted-foreground">{Number(item.weight_kg)} kg</span>
+                  <Link to="/collector/listing/$id" params={{ id: item.id }} className="text-info underline">
+                    Open
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
     </main>
