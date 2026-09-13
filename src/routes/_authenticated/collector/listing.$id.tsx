@@ -159,8 +159,10 @@ function ListingDetail() {
     );
   }
 
-  const openOffers = offers.filter((o) => o.status === "offered");
+  const openOffers = offers.filter((o) => o.status === "requested");
   const nameFor = (recyclerId: string) => recyclers.find((r) => r.id === recyclerId)?.name ?? "Recycler";
+  const verifiedFor = (recyclerId: string) => recyclers.find((r) => r.id === recyclerId)?.verified ?? false;
+
 
   return (
     <main className="min-h-screen bg-muted pb-12">
