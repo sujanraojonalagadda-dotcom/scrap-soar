@@ -78,13 +78,29 @@ function ListingDetail() {
     setError(null);
     try {
       await acceptOffer(listing, offer);
+      setConfirming(null);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "That offer could not be accepted.");
+      setError(err instanceof Error ? err.message : "That sale could not be confirmed.");
     } finally {
       setBusy(false);
     }
   }
+
+  async function handleReject(offer: RecyclerOffer) {
+    if (!listing) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await rejectOffer(listing, offer);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "That purchase request could not be rejected.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
 
   async function handleCancel() {
     if (!listing) return;
