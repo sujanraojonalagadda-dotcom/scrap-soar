@@ -58,7 +58,7 @@ function AddEWaste() {
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
-    setVoiceSupported(Boolean(navigator.mediaDevices?.getUserMedia && window.AudioContext));
+    setVoiceSupported(Boolean(navigator.mediaDevices));
     setOnline(navigator.onLine);
     const updateOnline = () => setOnline(navigator.onLine);
     window.addEventListener("online", updateOnline);
@@ -162,7 +162,8 @@ function AddEWaste() {
     }
     setError(null);
     try {
-      setStopRecording(() => await startAudioRecording());
+      const stop = await startAudioRecording();
+      setStopRecording(() => stop);
       setListening(true);
     } catch {
       setError("Microphone access is needed for voice input. You can enter the details manually.");
