@@ -1,20 +1,50 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type PickupStatus = "pending" | "accepted" | "rejected" | "confirmed" | "completed";
+/** Full lifecycle of a waste listing. A listing is only complete after a real handover. */
+export type ListingStatus =
+  | "draft"
+  | "pending_recycler"
+  | "offer_received"
+  | "recycler_selected"
+  | "pickup_scheduled"
+  | "handed_over"
+  | "recycler_confirmed"
+  | "completed"
+  | "rejected"
+  | "cancelled";
+
+/** Kept as an alias so existing imports continue to work. */
+export type PickupStatus = ListingStatus;
 export type PaymentStatus = "unpaid" | "paid";
+export type OfferStatus = "offered" | "accepted" | "not_selected" | "declined" | "withdrawn";
 
 export interface Pickup {
   id: string;
+  listing_code: string;
   collector_id: string;
   recycler_id: string | null;
   category: string;
   weight_kg: number;
   condition: string;
+  quantity_note: string | null;
+  notes: string | null;
+  photo_url: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  pickup_address: string | null;
   indicative_price: number | null;
+  selected_offer_id: string | null;
+  agreed_price_per_kg: number | null;
+  pickup_date: string | null;
   final_weight_kg: number | null;
   final_price: number | null;
-  status: PickupStatus;
+  status: ListingStatus;
   handover_code: string | null;
+  handover_at: string | null;
+  handover_notes: string | null;
+  handover_photo_url: string | null;
+  recycler_confirmed_at: string | null;
+  completed_at: string | null;
   otp_verified: boolean;
   payment_status: PaymentStatus;
   payment_method: string | null;
@@ -22,6 +52,38 @@ export interface Pickup {
   paid_at: string | null;
   receipt_number: string;
   created_at: string;
+}
+
+export interface RecyclerOffer {
+  id: string;
+  waste_listing_id: string;
+  recycler_id: string;
+  price_per_kg: number;
+  total_price: number;
+  pickup_date: string | null;
+  message: string | null;
+  status: OfferStatus;
+  created_at: string;
+}
+
+export const STATUS_LABEL: Record<ListingStatus, string> = {
+  draft: "Draft",
+  pending_recycler: "Waiting for recyclers",
+  offer_received: "Offers received",
+  recycler_selected: "Recycler selected",
+  pickup_scheduled: "Pickup scheduled",
+  handed_over: "Handed over",
+  recycler_confirmed: "Recycler confirmed",
+  completed: "Completed",
+  rejected: "Declined",
+  cancelled: "Cancelled",
+};
+
+export function statusTone(status: ListingStatus): string {
+  if (status === "completed") return "bg-brand-light text-brand-dark";
+  if (status === "rejected" || status === "cancelled") return "bg-destructive/10 text-destructive";
+  if (status === "pending_recycler" || status === "draft") return "bg-muted text-muted-foreground";
+  return "bg-warning-light text-warning-dark";
 }
 
 export interface CreatePickupInput {
@@ -33,6 +95,12 @@ export interface CreatePickupInput {
   condition: string;
   indicativePrice: number | null;
   handoverCode?: string;
+  quantityNote?: string | null;
+  notes?: string | null;
+  photoUrl?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  pickupAddress?: string | null;
 }
 
 export async function createPickup(input: CreatePickupInput): Promise<Pickup> {
@@ -48,6 +116,13 @@ export async function createPickup(input: CreatePickupInput): Promise<Pickup> {
       condition: input.condition,
       indicative_price: input.indicativePrice,
       handover_code: handoverCode,
+      quantity_note: input.quantityNote ?? null,
+      notes: input.notes ?? null,
+      photo_url: input.photoUrl ?? null,
+      latitude: input.latitude ?? null,
+      longitude: input.longitude ?? null,
+      pickup_address: input.pickupAddress ?? null,
+      status: input.recyclerId ? "recycler_selected" : "pending_recycler",
     })
     .select()
     .single();
@@ -79,14 +154,150 @@ export async function listRecyclerPickups(recyclerId: string): Promise<Pickup[]>
   return (data ?? []) as Pickup[];
 }
 
+/** Listings still open to every authorized recycler. */
+export async function listOpenListings(): Promise<Pickup[]> {
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("*")
+    .is("recycler_id", null)
+    .in("status", ["pending_recycler", "offer_received"])
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as Pickup[];
+}
+
 export async function getPickup(id: string): Promise<Pickup | null> {
   const { data, error } = await supabase.from("transactions").select("*").eq("id", id).maybeSingle();
   if (error) throw new Error(error.message);
   return (data as Pickup | null) ?? null;
 }
 
-export async function setStatus(id: string, status: PickupStatus): Promise<void> {
+export async function setStatus(id: string, status: ListingStatus): Promise<void> {
   const { error } = await supabase.from("transactions").update({ status }).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/* ---------------------------------- offers --------------------------------- */
+
+export async function listOffersForListing(listingId: string): Promise<RecyclerOffer[]> {
+  const { data, error } = await supabase
+    .from("recycler_offers")
+    .select("*")
+    .eq("waste_listing_id", listingId)
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as RecyclerOffer[];
+}
+
+export async function listMyOffers(recyclerId: string): Promise<RecyclerOffer[]> {
+  const { data, error } = await supabase
+    .from("recycler_offers")
+    .select("*")
+    .eq("recycler_id", recyclerId)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as RecyclerOffer[];
+}
+
+export interface CreateOfferInput {
+  listingId: string;
+  recyclerId: string;
+  pricePerKg: number;
+  totalPrice: number;
+  pickupDate: string | null;
+  message: string | null;
+}
+
+export async function createOffer(input: CreateOfferInput): Promise<RecyclerOffer> {
+  const { data, error } = await supabase
+    .from("recycler_offers")
+    .insert({
+      waste_listing_id: input.listingId,
+      recycler_id: input.recyclerId,
+      price_per_kg: input.pricePerKg,
+      total_price: input.totalPrice,
+      pickup_date: input.pickupDate,
+      message: input.message,
+    })
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data as RecyclerOffer;
+}
+
+/** Collector picks exactly one offer. Every other offer becomes "not selected". */
+export async function acceptOffer(listing: Pickup, offer: RecyclerOffer): Promise<void> {
+  const { error } = await supabase
+    .from("transactions")
+    .update({
+      recycler_id: offer.recycler_id,
+      selected_offer_id: offer.id,
+      agreed_price_per_kg: offer.price_per_kg,
+      indicative_price: offer.total_price,
+      pickup_date: offer.pickup_date,
+      status: "recycler_selected",
+    })
+    .eq("id", listing.id);
+  if (error) throw new Error(error.message);
+
+  const accepted = await supabase.from("recycler_offers").update({ status: "accepted" }).eq("id", offer.id);
+  if (accepted.error) throw new Error(accepted.error.message);
+  const others = await supabase
+    .from("recycler_offers")
+    .update({ status: "not_selected" })
+    .eq("waste_listing_id", listing.id)
+    .neq("id", offer.id);
+  if (others.error) throw new Error(others.error.message);
+}
+
+/* ------------------------------- transitions ------------------------------- */
+
+export async function recyclerAcceptRequest(id: string, pickupDate: string | null): Promise<void> {
+  const { error } = await supabase
+    .from("transactions")
+    .update({ status: "pickup_scheduled", ...(pickupDate ? { pickup_date: pickupDate } : {}) })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/** Declining releases the listing back to the marketplace. */
+export async function recyclerDeclineRequest(listing: Pickup): Promise<void> {
+  if (listing.selected_offer_id) {
+    await supabase.from("recycler_offers").update({ status: "declined" }).eq("id", listing.selected_offer_id);
+  }
+  const { error } = await supabase
+    .from("transactions")
+    .update({ recycler_id: null, selected_offer_id: null, status: "pending_recycler" })
+    .eq("id", listing.id);
+  if (error) throw new Error(error.message);
+}
+
+export interface HandoverInput {
+  actualWeightKg: number;
+  notes: string | null;
+  photoUrl: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+/** Collector records the real handover: actual weight, time, place and optional photo. */
+export async function recordHandover(listing: Pickup, input: HandoverInput): Promise<void> {
+  const { error } = await supabase
+    .from("transactions")
+    .update({
+      final_weight_kg: input.actualWeightKg,
+      handover_at: new Date().toISOString(),
+      handover_notes: input.notes,
+      handover_photo_url: input.photoUrl,
+      ...(input.latitude != null ? { latitude: input.latitude, longitude: input.longitude } : {}),
+      status: "handed_over",
+    })
+    .eq("id", listing.id);
+  if (error) throw new Error(error.message);
+}
+
+export async function cancelListing(id: string): Promise<void> {
+  const { error } = await supabase.from("transactions").update({ status: "cancelled" }).eq("id", id);
   if (error) throw new Error(error.message);
 }
 
@@ -106,7 +317,8 @@ export async function confirmWeightAndPrice(
       final_weight_kg: finalWeightKg,
       final_price: finalPrice,
       otp_verified: true,
-      status: "confirmed",
+      recycler_confirmed_at: new Date().toISOString(),
+      status: "recycler_confirmed",
     })
     .eq("id", id);
   if (error) return { ok: false, message: error.message };
@@ -121,6 +333,7 @@ export async function markPaid(id: string, method: string, reference: string | n
       payment_method: method,
       payment_reference: reference,
       paid_at: new Date().toISOString(),
+      completed_at: new Date().toISOString(),
       status: "completed",
     })
     .eq("id", id);
