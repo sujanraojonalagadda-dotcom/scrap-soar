@@ -9,11 +9,13 @@ import {
   getPickup,
   listOffersForListing,
   recordHandover,
+  rejectOffer,
   STATUS_LABEL,
   statusTone,
   type Pickup,
   type RecyclerOffer,
 } from "@/lib/services/transactionService";
+
 import { getRecyclerById, listRecyclers, type Recycler } from "@/lib/services/recyclerService";
 import { conditionLabel, formatRupees } from "@/lib/services/priceService";
 import { WastePhoto } from "@/components/WastePhoto";
@@ -45,7 +47,9 @@ function ListingDetail() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<string | null>(null);
   const [actualWeight, setActualWeight] = useState("");
+
   const [handoverNotes, setHandoverNotes] = useState("");
   const [handoverPhoto, setHandoverPhoto] = useState<File | null>(null);
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
