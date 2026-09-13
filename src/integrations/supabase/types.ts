@@ -77,11 +77,69 @@ export type Database = {
         }
         Relationships: []
       }
+      recycler_offers: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          pickup_date: string | null
+          price_per_kg: number
+          recycler_id: string
+          status: string
+          total_price: number
+          updated_at: string
+          waste_listing_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          pickup_date?: string | null
+          price_per_kg: number
+          recycler_id: string
+          status?: string
+          total_price: number
+          updated_at?: string
+          waste_listing_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          pickup_date?: string | null
+          price_per_kg?: number
+          recycler_id?: string
+          status?: string
+          total_price?: number
+          updated_at?: string
+          waste_listing_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recycler_offers_recycler_id_fkey"
+            columns: ["recycler_id"]
+            isOneToOne: false
+            referencedRelation: "recyclers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recycler_offers_waste_listing_id_fkey"
+            columns: ["waste_listing_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recyclers: {
         Row: {
           address: string | null
+          business_hours: string | null
           city: string | null
+          contact_person: string | null
+          contact_phone: string | null
           created_at: string
+          description: string | null
           id: string
           latitude: number | null
           location: string | null
@@ -90,18 +148,26 @@ export type Database = {
           longitude: number | null
           materials: string[]
           name: string
+          operating_area: string | null
           postal_code: string | null
           rate_per_kg: number | null
+          registration_number: string | null
           state: string | null
           updated_at: string
           user_id: string
           verification_date: string | null
+          verification_note: string | null
+          verification_status: string
           verified: boolean
         }
         Insert: {
           address?: string | null
+          business_hours?: string | null
           city?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           latitude?: number | null
           location?: string | null
@@ -110,18 +176,26 @@ export type Database = {
           longitude?: number | null
           materials?: string[]
           name: string
+          operating_area?: string | null
           postal_code?: string | null
           rate_per_kg?: number | null
+          registration_number?: string | null
           state?: string | null
           updated_at?: string
           user_id: string
           verification_date?: string | null
+          verification_note?: string | null
+          verification_status?: string
           verified?: boolean
         }
         Update: {
           address?: string | null
+          business_hours?: string | null
           city?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           latitude?: number | null
           location?: string | null
@@ -130,76 +204,125 @@ export type Database = {
           longitude?: number | null
           materials?: string[]
           name?: string
+          operating_area?: string | null
           postal_code?: string | null
           rate_per_kg?: number | null
+          registration_number?: string | null
           state?: string | null
           updated_at?: string
           user_id?: string
           verification_date?: string | null
+          verification_note?: string | null
+          verification_status?: string
           verified?: boolean
         }
         Relationships: []
       }
       transactions: {
         Row: {
+          agreed_price_per_kg: number | null
           category: string
           collector_id: string
+          completed_at: string | null
           condition: string
           created_at: string
           final_price: number | null
           final_weight_kg: number | null
+          handover_at: string | null
           handover_code: string | null
+          handover_notes: string | null
+          handover_photo_url: string | null
           id: string
           indicative_price: number | null
+          latitude: number | null
+          listing_code: string
+          longitude: number | null
+          notes: string | null
           otp_verified: boolean
           paid_at: string | null
           payment_method: string | null
           payment_reference: string | null
           payment_status: string
+          photo_url: string | null
+          pickup_address: string | null
+          pickup_date: string | null
+          quantity_note: string | null
           receipt_number: string
+          recycler_confirmed_at: string | null
           recycler_id: string | null
+          selected_offer_id: string | null
           status: string
           updated_at: string
           weight_kg: number
         }
         Insert: {
+          agreed_price_per_kg?: number | null
           category: string
           collector_id: string
+          completed_at?: string | null
           condition: string
           created_at?: string
           final_price?: number | null
           final_weight_kg?: number | null
+          handover_at?: string | null
           handover_code?: string | null
+          handover_notes?: string | null
+          handover_photo_url?: string | null
           id?: string
           indicative_price?: number | null
+          latitude?: number | null
+          listing_code?: string
+          longitude?: number | null
+          notes?: string | null
           otp_verified?: boolean
           paid_at?: string | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_status?: string
+          photo_url?: string | null
+          pickup_address?: string | null
+          pickup_date?: string | null
+          quantity_note?: string | null
           receipt_number?: string
+          recycler_confirmed_at?: string | null
           recycler_id?: string | null
+          selected_offer_id?: string | null
           status?: string
           updated_at?: string
           weight_kg: number
         }
         Update: {
+          agreed_price_per_kg?: number | null
           category?: string
           collector_id?: string
+          completed_at?: string | null
           condition?: string
           created_at?: string
           final_price?: number | null
           final_weight_kg?: number | null
+          handover_at?: string | null
           handover_code?: string | null
+          handover_notes?: string | null
+          handover_photo_url?: string | null
           id?: string
           indicative_price?: number | null
+          latitude?: number | null
+          listing_code?: string
+          longitude?: number | null
+          notes?: string | null
           otp_verified?: boolean
           paid_at?: string | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_status?: string
+          photo_url?: string | null
+          pickup_address?: string | null
+          pickup_date?: string | null
+          quantity_note?: string | null
           receipt_number?: string
+          recycler_confirmed_at?: string | null
           recycler_id?: string | null
+          selected_offer_id?: string | null
           status?: string
           updated_at?: string
           weight_kg?: number

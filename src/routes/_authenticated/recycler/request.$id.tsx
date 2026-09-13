@@ -1,24 +1,28 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowLeft, Loader2, CheckCircle2, IndianRupee } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
+import { ArrowLeft, CheckCircle2, Loader2, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getMyRecycler } from "@/lib/services/recyclerService";
+import { getMyRecycler, type Recycler } from "@/lib/services/recyclerService";
 import {
   confirmWeightAndPrice,
   getPickup,
   markPaid,
-  setStatus,
+  recyclerAcceptRequest,
+  recyclerDeclineRequest,
+  STATUS_LABEL,
+  statusTone,
   type Pickup,
 } from "@/lib/services/transactionService";
 import { conditionLabel, formatRupees } from "@/lib/services/priceService";
+import { WastePhoto } from "@/components/WastePhoto";
 
 export const Route = createFileRoute("/_authenticated/recycler/request/$id")({
   head: () => ({
     meta: [
-      { title: "Pickup Request — Kabadiwala Connect" },
-      { name: "description", content: "Accept a pickup, confirm the weight and final price, then pay the collector." },
-      { property: "og:title", content: "Pickup Request — Kabadiwala Connect" },
-      { property: "og:description", content: "Accept, confirm the weight and price, then pay the collector." },
+      { title: "Collection Transaction — Kabadiwala Connect" },
+      { name: "description", content: "Accept the collection, confirm the received weight and record the payment." },
+      { property: "og:title", content: "Collection Transaction — Kabadiwala Connect" },
+      { property: "og:description", content: "Accept, confirm receipt and record payment for one collection." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -26,74 +30,74 @@ export const Route = createFileRoute("/_authenticated/recycler/request/$id")({
   component: RequestDetail,
 });
 
-const METHODS = ["UPI", "Cash", "Bank transfer"];
+const METHODS = [
+  { value: "upi", label: "UPI" },
+  { value: "cash", label: "Cash" },
+  { value: "bank_transfer", label: "Bank transfer" },
+];
 
 function RequestDetail() {
   const { id } = Route.useParams();
-  const navigate = useNavigate();
-  const [pickup, setPickup] = useState<Pickup | null>(null);
+  const [listing, setListing] = useState<Pickup | null>(null);
+  const [recycler, setRecycler] = useState<Recycler | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [pickupDate, setPickupDate] = useState("");
   const [finalWeight, setFinalWeight] = useState("");
   const [finalPrice, setFinalPrice] = useState("");
   const [code, setCode] = useState("");
-  const [method, setMethod] = useState("UPI");
+  const [method, setMethod] = useState("upi");
   const [reference, setReference] = useState("");
 
-  useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return;
-      const r = await getMyRecycler(data.user.id).catch(() => null);
-      if (!r) {
-        navigate({ to: "/recycler/register" });
-        return;
-      }
-      await refresh();
-      setLoading(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const load = useCallback(async () => {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) return;
+    setRecycler(await getMyRecycler(data.user.id).catch(() => null));
+    const record = await getPickup(id).catch(() => null);
+    setListing(record);
+    if (record) {
+      const weight = Number(record.final_weight_kg ?? record.weight_kg);
+      setFinalWeight((current) => current || String(weight));
+      const rate = Number(record.agreed_price_per_kg ?? 0);
+      setFinalPrice((current) => current || (rate ? String(Math.round(rate * weight)) : ""));
+      setPickupDate((current) => current || record.pickup_date || "");
+    }
+    setLoading(false);
   }, [id]);
 
-  async function refresh() {
-    const p = await getPickup(id).catch(() => null);
-    setPickup(p);
-    if (p) {
-      setFinalWeight((f) => f || String(p.final_weight_kg ?? p.weight_kg));
-      setFinalPrice((f) => f || String(p.final_price ?? p.indicative_price ?? ""));
-    }
-  }
+  useEffect(() => {
+    void load();
+  }, [load]);
 
-  async function act(fn: () => Promise<void>) {
-    setError(null);
+  async function run(action: () => Promise<void>, fallback: string) {
     setBusy(true);
+    setError(null);
     try {
-      await fn();
-      await refresh();
+      await action();
+      await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : fallback);
     } finally {
       setBusy(false);
     }
   }
 
-  async function handleConfirm() {
-    setError(null);
+  async function confirmReceipt(e: React.FormEvent) {
+    e.preventDefault();
+    if (!listing) return;
     setBusy(true);
+    setError(null);
     const result = await confirmWeightAndPrice(
-      id,
+      listing.id,
       Number(finalWeight),
       Number(finalPrice),
       code,
-      pickup?.handover_code ?? null,
+      listing.handover_code,
     );
+    if (!result.ok) setError(result.message ?? "Receipt could not be confirmed.");
+    else await load();
     setBusy(false);
-    if (!result.ok) {
-      setError(result.message ?? "Could not confirm this pickup.");
-      return;
-    }
-    await refresh();
   }
 
   if (loading) {
@@ -104,176 +108,205 @@ function RequestDetail() {
     );
   }
 
-  if (!pickup) {
+  if (!listing || !recycler || listing.recycler_id !== recycler.id) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-muted px-5">
-        <p className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
-          This pickup request is not available.
+      <main className="min-h-screen bg-muted px-4 py-10">
+        <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
+          This collection is not available to you.
         </p>
+        <Link to="/recycler/requests" className="mt-4 inline-block text-sm text-info underline">
+          Back to requests
+        </Link>
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-muted pb-12">
-      <header className="flex items-center gap-3 bg-card px-5 py-4 shadow-sm">
+      <header className="flex items-center gap-3 bg-card px-4 py-4 shadow-sm">
         <Link to="/recycler/requests" aria-label="Back" className="text-muted-foreground">
           <ArrowLeft className="size-5" aria-hidden />
         </Link>
-        <h1 className="text-lg font-bold text-foreground">{pickup.receipt_number}</h1>
+        <div>
+          <h1 className="text-lg font-bold text-foreground">{listing.listing_code}</h1>
+          <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${statusTone(listing.status)}`}>
+            {STATUS_LABEL[listing.status]}
+          </span>
+        </div>
       </header>
 
-      <section className="mx-auto max-w-2xl space-y-4 px-5 pt-6">
-        <div className="rounded-xl border border-border bg-card p-5">
-          <h2 className="text-sm font-semibold text-foreground">Pickup details</h2>
-          <dl className="mt-3 grid grid-cols-2 gap-y-2 text-sm">
-            <dt className="text-muted-foreground">Item</dt>
-            <dd className="capitalize text-foreground">{pickup.category}</dd>
-            <dt className="text-muted-foreground">Expected weight</dt>
-            <dd className="text-foreground">{Number(pickup.weight_kg)} kg</dd>
-            <dt className="text-muted-foreground">Condition</dt>
-            <dd className="text-foreground">{conditionLabel(pickup.condition)}</dd>
-            <dt className="text-muted-foreground">Indicative value</dt>
-            <dd className="text-foreground">{formatRupees(pickup.indicative_price)}</dd>
-            <dt className="text-muted-foreground">Status</dt>
-            <dd className="capitalize text-foreground">{pickup.status}</dd>
-          </dl>
-        </div>
-
-        {pickup.status === "pending" && (
-          <div className="flex gap-3">
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => act(() => setStatus(id, "accepted"))}
-              className="h-12 flex-1 rounded-lg bg-primary text-base font-semibold text-primary-foreground disabled:opacity-50"
-            >
-              ACCEPT
-            </button>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => act(() => setStatus(id, "rejected"))}
-              className="h-12 flex-1 rounded-lg border border-destructive text-base font-semibold text-destructive disabled:opacity-50"
-            >
-              REJECT
-            </button>
-          </div>
-        )}
-
-        {pickup.status === "accepted" && (
-          <div className="rounded-xl border border-border bg-card p-5">
-            <h2 className="text-sm font-semibold text-foreground">Confirm weight and price</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Ask the collector for the 6-digit handover code shown on their phone.
+      <section className="mx-auto max-w-2xl space-y-4 px-4 py-6">
+        <article className="rounded-xl border border-border bg-card p-4">
+          <WastePhoto path={listing.photo_url} alt={`${listing.category} for collection`} />
+          <h2 className="mt-3 font-semibold capitalize text-foreground">{listing.category}</h2>
+          <p className="text-sm text-muted-foreground">
+            {Number(listing.weight_kg)} kg listed · {conditionLabel(listing.condition)}
+          </p>
+          {listing.quantity_note && <p className="text-sm text-muted-foreground">{listing.quantity_note}</p>}
+          <p className="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
+            <MapPin className="size-4" aria-hidden /> {listing.pickup_address ?? "Area not shared"}
+          </p>
+          {listing.agreed_price_per_kg && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Agreed rate: ₹{Number(listing.agreed_price_per_kg)}/kg · offer total{" "}
+              {formatRupees(listing.indicative_price)}
             </p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              <label className="text-sm">
-                <span className="mb-1.5 block text-muted-foreground">Confirmed weight (kg)</span>
-                <input
-                  inputMode="decimal"
-                  value={finalWeight}
-                  onChange={(e) => setFinalWeight(e.target.value)}
-                  className="h-11 w-full rounded-lg border border-border bg-background px-3 outline-none focus:ring-2 focus:ring-ring"
-                />
-              </label>
-              <label className="text-sm">
-                <span className="mb-1.5 block text-muted-foreground">Final price (₹)</span>
-                <input
-                  inputMode="decimal"
-                  value={finalPrice}
-                  onChange={(e) => setFinalPrice(e.target.value)}
-                  className="h-11 w-full rounded-lg border border-border bg-background px-3 outline-none focus:ring-2 focus:ring-ring"
-                />
-              </label>
-              <label className="text-sm">
-                <span className="mb-1.5 block text-muted-foreground">Handover code</span>
-                <input
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  className="h-11 w-full rounded-lg border border-border bg-background px-3 tracking-[0.3em] outline-none focus:ring-2 focus:ring-ring"
-                />
-              </label>
+          )}
+          {listing.notes && <p className="mt-2 text-sm text-muted-foreground">Notes: {listing.notes}</p>}
+        </article>
+
+        {listing.status === "recycler_selected" && (
+          <article className="rounded-xl border border-border bg-card p-4">
+            <h2 className="font-semibold text-foreground">Collector accepted your offer</h2>
+            <label htmlFor="pd" className="mt-3 mb-1.5 block text-sm font-medium text-foreground">
+              Pickup date
+            </label>
+            <input
+              id="pd"
+              type="date"
+              value={pickupDate}
+              onChange={(e) => setPickupDate(e.target.value)}
+              className="h-11 w-full rounded-lg border border-border bg-background px-3 text-base outline-none"
+            />
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => run(() => recyclerAcceptRequest(listing.id, pickupDate || null), "Could not accept this collection.")}
+                disabled={busy}
+                className="flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-50"
+              >
+                {busy && <Loader2 className="size-4 animate-spin" aria-hidden />} Accept collection
+              </button>
+              <button
+                type="button"
+                onClick={() => run(() => recyclerDeclineRequest(listing), "Could not decline this collection.")}
+                disabled={busy}
+                className="h-11 rounded-lg border border-destructive/40 px-4 text-sm font-medium text-destructive disabled:opacity-50"
+              >
+                Decline
+              </button>
             </div>
-            <button
-              type="button"
-              disabled={busy || !finalWeight || !finalPrice || code.replace(/\D/g, "").length !== 6}
-              onClick={handleConfirm}
-              className="mt-4 h-12 w-full rounded-lg bg-primary text-base font-semibold text-primary-foreground disabled:opacity-50"
-            >
-              CONFIRM HANDOVER
-            </button>
-          </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Declining returns this listing to other recyclers.
+            </p>
+          </article>
         )}
 
-        {pickup.status === "confirmed" && pickup.payment_status === "unpaid" && (
-          <div className="rounded-xl border border-border bg-card p-5">
-            <h2 className="text-sm font-semibold text-foreground">Pay the collector</h2>
-            <p className="mt-2 flex items-center gap-1 text-2xl font-bold text-foreground">
-              <IndianRupee className="size-5" aria-hidden />
-              {Number(pickup.final_price ?? 0).toLocaleString("en-IN")}
+        {listing.status === "pickup_scheduled" && (
+          <p className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
+            Pickup scheduled
+            {listing.pickup_date ? ` for ${new Date(`${listing.pickup_date}T00:00:00`).toLocaleDateString("en-IN")}` : ""}.
+            The collector records the handover with the actual weight.
+          </p>
+        )}
+
+        {listing.status === "handed_over" && (
+          <form onSubmit={confirmReceipt} className="rounded-xl border border-border bg-card p-4">
+            <h2 className="font-semibold text-foreground">Confirm what you received</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Collector recorded {Number(listing.final_weight_kg ?? listing.weight_kg)} kg on{" "}
+              {new Date(listing.handover_at ?? listing.created_at).toLocaleString("en-IN")}.
+              {listing.handover_notes ? ` Notes: ${listing.handover_notes}` : ""}
             </p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            {listing.handover_photo_url && (
+              <div className="mt-3">
+                <WastePhoto path={listing.handover_photo_url} alt="Handover photo" />
+              </div>
+            )}
+            <label htmlFor="fw" className="mt-3 mb-1.5 block text-sm font-medium text-foreground">
+              Final weight (kg)
+            </label>
+            <input
+              id="fw"
+              inputMode="decimal"
+              value={finalWeight}
+              onChange={(e) => setFinalWeight(e.target.value)}
+              className="h-11 w-full rounded-lg border border-border bg-background px-3 text-base outline-none"
+            />
+            <label htmlFor="fp" className="mt-4 mb-1.5 block text-sm font-medium text-foreground">
+              Final price (₹)
+            </label>
+            <input
+              id="fp"
+              inputMode="decimal"
+              value={finalPrice}
+              onChange={(e) => setFinalPrice(e.target.value)}
+              className="h-11 w-full rounded-lg border border-border bg-background px-3 text-base outline-none"
+            />
+            <label htmlFor="oc" className="mt-4 mb-1.5 block text-sm font-medium text-foreground">
+              Collector's handover code
+            </label>
+            <input
+              id="oc"
+              inputMode="numeric"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="6 digits"
+              className="h-11 w-full rounded-lg border border-border bg-background px-3 text-base tracking-[0.3em] outline-none"
+            />
+            <button
+              type="submit"
+              disabled={busy || !finalWeight || !finalPrice || code.replace(/\D/g, "").length !== 6}
+              className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-50"
+            >
+              {busy && <Loader2 className="size-4 animate-spin" aria-hidden />} CONFIRM RECEIPT
+            </button>
+          </form>
+        )}
+
+        {listing.status === "recycler_confirmed" && listing.payment_status === "unpaid" && (
+          <article className="rounded-xl border border-border bg-card p-4">
+            <h2 className="font-semibold text-foreground">Pay the collector</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Amount due: <span className="font-semibold text-foreground">{formatRupees(listing.final_price)}</span>
+            </p>
+            <span className="mt-3 mb-1.5 block text-sm font-medium text-foreground">Method</span>
+            <div className="space-y-2">
               {METHODS.map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setMethod(m)}
-                  className={`rounded-full border px-3 py-1.5 text-sm ${
-                    method === m
-                      ? "border-brand bg-brand-light text-brand-dark"
-                      : "border-border bg-background text-muted-foreground"
-                  }`}
-                >
-                  {m}
-                </button>
+                <label key={m.value} className="flex items-center gap-3 rounded-lg border border-border px-3 py-2.5 text-sm">
+                  <input
+                    type="radio"
+                    name="method"
+                    checked={method === m.value}
+                    onChange={() => setMethod(m.value)}
+                    className="size-4 accent-[var(--brand)]"
+                  />
+                  {m.label}
+                </label>
               ))}
             </div>
-            <label className="mt-4 block text-sm">
-              <span className="mb-1.5 block text-muted-foreground">Payment reference (optional)</span>
-              <input
-                value={reference}
-                onChange={(e) => setReference(e.target.value)}
-                placeholder="UPI transaction ID / receipt no."
-                className="h-11 w-full rounded-lg border border-border bg-background px-3 outline-none focus:ring-2 focus:ring-ring"
-              />
+            <label htmlFor="ref" className="mt-4 mb-1.5 block text-sm font-medium text-foreground">
+              Reference (UPI ID, transfer number or note)
             </label>
+            <input
+              id="ref"
+              value={reference}
+              onChange={(e) => setReference(e.target.value)}
+              className="h-11 w-full rounded-lg border border-border bg-background px-3 text-base outline-none"
+            />
             <button
               type="button"
+              onClick={() => run(() => markPaid(listing.id, method, reference.trim() || null), "Payment could not be recorded.")}
               disabled={busy}
-              onClick={() => act(() => markPaid(id, method, reference.trim() || null))}
-              className="mt-4 h-12 w-full rounded-lg bg-primary text-base font-semibold text-primary-foreground disabled:opacity-50"
+              className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground disabled:opacity-50"
             >
-              MARK AS PAID
+              {busy && <Loader2 className="size-4 animate-spin" aria-hidden />} RECORD PAYMENT & COMPLETE
             </button>
-            <p className="mt-3 rounded-lg bg-info-light px-3 py-2 text-xs text-info-dark">
-              Card and online payment inside the app is not switched on yet.
-            </p>
-          </div>
+          </article>
         )}
 
-        {pickup.payment_status === "paid" && (
-          <div className="rounded-xl border border-border bg-brand-light p-5">
-            <p className="flex items-center gap-2 font-semibold text-brand-dark">
-              <CheckCircle2 className="size-5" aria-hidden /> Handover complete and paid
-            </p>
-            <dl className="mt-3 grid grid-cols-2 gap-y-2 text-sm text-brand-dark">
-              <dt>Confirmed weight</dt>
-              <dd>{Number(pickup.final_weight_kg ?? 0)} kg</dd>
-              <dt>Final price</dt>
-              <dd>{formatRupees(pickup.final_price)}</dd>
-              <dt>Paid by</dt>
-              <dd>{pickup.payment_method}</dd>
-              {pickup.payment_reference && (
-                <>
-                  <dt>Reference</dt>
-                  <dd>{pickup.payment_reference}</dd>
-                </>
-              )}
+        {listing.status === "completed" && (
+          <article className="rounded-xl border border-brand bg-card p-4">
+            <h2 className="flex items-center gap-2 font-semibold text-brand-dark">
+              <CheckCircle2 className="size-5" aria-hidden /> Transaction complete
+            </h2>
+            <dl className="mt-3 space-y-1 text-sm">
+              <Row label="Final weight" value={`${Number(listing.final_weight_kg ?? listing.weight_kg)} kg`} />
+              <Row label="Final price" value={formatRupees(listing.final_price)} />
+              <Row label="Receipt" value={listing.receipt_number} />
+              <Row label="Payment" value={`${listing.payment_method ?? "Recorded"}${listing.payment_reference ? ` · ${listing.payment_reference}` : ""}`} />
             </dl>
-          </div>
+          </article>
         )}
 
         {error && (
@@ -283,5 +316,14 @@ function RequestDetail() {
         )}
       </section>
     </main>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-3">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="font-medium capitalize text-foreground">{value}</dd>
+    </div>
   );
 }

@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export type VerificationStatus = "pending" | "approved" | "rejected" | "changes_requested";
+
 export interface Recycler {
   id: string;
   user_id: string;
@@ -9,6 +11,14 @@ export interface Recycler {
   rate_per_kg: number | null;
   verified: boolean;
   verification_date: string | null;
+  verification_status: VerificationStatus;
+  verification_note: string | null;
+  contact_person: string | null;
+  contact_phone: string | null;
+  operating_area: string | null;
+  registration_number: string | null;
+  description: string | null;
+  business_hours: string | null;
   created_at: string;
   latitude?: number | null;
   longitude?: number | null;
@@ -20,23 +30,39 @@ export interface Recycler {
   location_sharing_enabled?: boolean;
 }
 
+export const VERIFICATION_LABEL: Record<VerificationStatus, string> = {
+  pending: "Awaiting admin approval",
+  approved: "Approved",
+  rejected: "Rejected",
+  changes_requested: "Changes requested",
+};
+
 export async function getMyRecycler(userId: string): Promise<Recycler | null> {
-  const { data, error } = await supabase
-    .from("recyclers")
-    .select("*")
-    .eq("user_id", userId)
-    .maybeSingle();
+  const { data, error } = await supabase.from("recyclers").select("*").eq("user_id", userId).maybeSingle();
   if (error) throw new Error(error.message);
   return (data as Recycler | null) ?? null;
 }
 
-export async function createRecycler(input: {
-  userId: string;
+export async function getRecyclerById(id: string): Promise<Recycler | null> {
+  const { data, error } = await supabase.from("recyclers").select("*").eq("id", id).maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as Recycler | null) ?? null;
+}
+
+export interface OrganisationInput {
   name: string;
   location: string | null;
   materials: string[];
   ratePerKg: number | null;
-}): Promise<Recycler> {
+  contactPerson?: string | null;
+  contactPhone?: string | null;
+  operatingArea?: string | null;
+  registrationNumber?: string | null;
+  description?: string | null;
+  businessHours?: string | null;
+}
+
+export async function createRecycler(input: OrganisationInput & { userId: string }): Promise<Recycler> {
   const { data, error } = await supabase
     .from("recyclers")
     .insert({
@@ -45,6 +71,12 @@ export async function createRecycler(input: {
       location: input.location,
       materials: input.materials,
       rate_per_kg: input.ratePerKg,
+      contact_person: input.contactPerson ?? null,
+      contact_phone: input.contactPhone ?? null,
+      operating_area: input.operatingArea ?? null,
+      registration_number: input.registrationNumber ?? null,
+      description: input.description ?? null,
+      business_hours: input.businessHours ?? null,
     })
     .select()
     .single();
@@ -52,17 +84,48 @@ export async function createRecycler(input: {
   return data as Recycler;
 }
 
+/** Recycler edits their own organisation profile. Approval is decided by an admin. */
+export async function updateOrganisation(recyclerId: string, input: OrganisationInput): Promise<void> {
+  const { error } = await supabase
+    .from("recyclers")
+    .update({
+      name: input.name,
+      location: input.location,
+      materials: input.materials,
+      rate_per_kg: input.ratePerKg,
+      contact_person: input.contactPerson ?? null,
+      contact_phone: input.contactPhone ?? null,
+      operating_area: input.operatingArea ?? null,
+      registration_number: input.registrationNumber ?? null,
+      description: input.description ?? null,
+      business_hours: input.businessHours ?? null,
+    })
+    .eq("id", recyclerId);
+  if (error) throw new Error(error.message);
+}
+
 export async function updateRate(recyclerId: string, ratePerKg: number): Promise<void> {
   const { error } = await supabase.from("recyclers").update({ rate_per_kg: ratePerKg }).eq("id", recyclerId);
   if (error) throw new Error(error.message);
 }
 
-/** Recyclers a collector may choose. Empty until real recyclers register. */
+/** Recyclers a collector may browse. Empty until real recyclers register. */
 export async function listRecyclers(): Promise<Recycler[]> {
   const { data, error } = await supabase
     .from("recyclers")
     .select("*")
     .order("verified", { ascending: false })
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as Recycler[];
+}
+
+/** Only admin-approved organisations, for collector-facing lists. */
+export async function listVerifiedRecyclers(): Promise<Recycler[]> {
+  const { data, error } = await supabase
+    .from("recyclers")
+    .select("*")
+    .eq("verified", true)
     .order("created_at", { ascending: true });
   if (error) throw new Error(error.message);
   return (data ?? []) as Recycler[];
