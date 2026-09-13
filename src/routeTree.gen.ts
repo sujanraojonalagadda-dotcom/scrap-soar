@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedCollectorRouteRouteImport } from './routes/_authenticated/collector/route'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as AuthenticatedAdminCollectorsRouteImport } from './routes/_authenticated/admin/collectors'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
@@ -44,6 +45,12 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCollectorRouteRoute =
+  AuthenticatedCollectorRouteRouteImport.update({
+    id: '/collector',
+    path: '/collector',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
   id: '/api/transcribe',
   path: '/api/transcribe',
@@ -75,45 +82,45 @@ const AuthenticatedAdminTransactionsRoute =
   } as any)
 const AuthenticatedCollectorAddEwasteRoute =
   AuthenticatedCollectorAddEwasteRouteImport.update({
-    id: '/collector/add-ewaste',
-    path: '/collector/add-ewaste',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/add-ewaste',
+    path: '/add-ewaste',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorHistoryRoute =
   AuthenticatedCollectorHistoryRouteImport.update({
-    id: '/collector/history',
-    path: '/collector/history',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorHomeRoute =
   AuthenticatedCollectorHomeRouteImport.update({
-    id: '/collector/home',
-    path: '/collector/home',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/home',
+    path: '/home',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorIdentifyRoute =
   AuthenticatedCollectorIdentifyRouteImport.update({
-    id: '/collector/identify',
-    path: '/collector/identify',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/identify',
+    path: '/identify',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorNearbyRoute =
   AuthenticatedCollectorNearbyRouteImport.update({
-    id: '/collector/nearby',
-    path: '/collector/nearby',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/nearby',
+    path: '/nearby',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorProfileRoute =
   AuthenticatedCollectorProfileRouteImport.update({
-    id: '/collector/profile',
-    path: '/collector/profile',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedCollectorRegisterRoute =
   AuthenticatedCollectorRegisterRouteImport.update({
-    id: '/collector/register',
-    path: '/collector/register',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/register',
+    path: '/register',
+    getParentRoute: () => AuthenticatedCollectorRouteRoute,
   } as any)
 const AuthenticatedRecyclerHomeRoute =
   AuthenticatedRecyclerHomeRouteImport.update({
@@ -149,6 +156,7 @@ const AuthenticatedRecyclerRequestIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
   '/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -170,6 +178,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
   '/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -193,6 +202,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
   '/_authenticated/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/collector'
     | '/api/transcribe'
     | '/admin/collectors'
     | '/admin/dashboard'
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/collector'
     | '/api/transcribe'
     | '/admin/collectors'
     | '/admin/dashboard'
@@ -259,6 +271,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/_authenticated/admin'
+    | '/_authenticated/collector'
     | '/api/transcribe'
     | '/_authenticated/admin/collectors'
     | '/_authenticated/admin/dashboard'
@@ -307,6 +320,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/collector': {
+      id: '/_authenticated/collector'
+      path: '/collector'
+      fullPath: '/collector'
+      preLoaderRoute: typeof AuthenticatedCollectorRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/transcribe': {
       id: '/api/transcribe'
       path: '/api/transcribe'
@@ -344,52 +364,52 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/collector/add-ewaste': {
       id: '/_authenticated/collector/add-ewaste'
-      path: '/collector/add-ewaste'
+      path: '/add-ewaste'
       fullPath: '/collector/add-ewaste'
       preLoaderRoute: typeof AuthenticatedCollectorAddEwasteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/history': {
       id: '/_authenticated/collector/history'
-      path: '/collector/history'
+      path: '/history'
       fullPath: '/collector/history'
       preLoaderRoute: typeof AuthenticatedCollectorHistoryRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/home': {
       id: '/_authenticated/collector/home'
-      path: '/collector/home'
+      path: '/home'
       fullPath: '/collector/home'
       preLoaderRoute: typeof AuthenticatedCollectorHomeRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/identify': {
       id: '/_authenticated/collector/identify'
-      path: '/collector/identify'
+      path: '/identify'
       fullPath: '/collector/identify'
       preLoaderRoute: typeof AuthenticatedCollectorIdentifyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/nearby': {
       id: '/_authenticated/collector/nearby'
-      path: '/collector/nearby'
+      path: '/nearby'
       fullPath: '/collector/nearby'
       preLoaderRoute: typeof AuthenticatedCollectorNearbyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/profile': {
       id: '/_authenticated/collector/profile'
-      path: '/collector/profile'
+      path: '/profile'
       fullPath: '/collector/profile'
       preLoaderRoute: typeof AuthenticatedCollectorProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/collector/register': {
       id: '/_authenticated/collector/register'
-      path: '/collector/register'
+      path: '/register'
       fullPath: '/collector/register'
       preLoaderRoute: typeof AuthenticatedCollectorRegisterRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCollectorRouteRoute
     }
     '/_authenticated/recycler/home': {
       id: '/_authenticated/recycler/home'
@@ -449,8 +469,7 @@ const AuthenticatedAdminRouteRouteWithChildren =
     AuthenticatedAdminRouteRouteChildren,
   )
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+interface AuthenticatedCollectorRouteRouteChildren {
   AuthenticatedCollectorAddEwasteRoute: typeof AuthenticatedCollectorAddEwasteRoute
   AuthenticatedCollectorHistoryRoute: typeof AuthenticatedCollectorHistoryRoute
   AuthenticatedCollectorHomeRoute: typeof AuthenticatedCollectorHomeRoute
@@ -458,6 +477,27 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCollectorNearbyRoute: typeof AuthenticatedCollectorNearbyRoute
   AuthenticatedCollectorProfileRoute: typeof AuthenticatedCollectorProfileRoute
   AuthenticatedCollectorRegisterRoute: typeof AuthenticatedCollectorRegisterRoute
+}
+
+const AuthenticatedCollectorRouteRouteChildren: AuthenticatedCollectorRouteRouteChildren =
+  {
+    AuthenticatedCollectorAddEwasteRoute: AuthenticatedCollectorAddEwasteRoute,
+    AuthenticatedCollectorHistoryRoute: AuthenticatedCollectorHistoryRoute,
+    AuthenticatedCollectorHomeRoute: AuthenticatedCollectorHomeRoute,
+    AuthenticatedCollectorIdentifyRoute: AuthenticatedCollectorIdentifyRoute,
+    AuthenticatedCollectorNearbyRoute: AuthenticatedCollectorNearbyRoute,
+    AuthenticatedCollectorProfileRoute: AuthenticatedCollectorProfileRoute,
+    AuthenticatedCollectorRegisterRoute: AuthenticatedCollectorRegisterRoute,
+  }
+
+const AuthenticatedCollectorRouteRouteWithChildren =
+  AuthenticatedCollectorRouteRoute._addFileChildren(
+    AuthenticatedCollectorRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedCollectorRouteRoute: typeof AuthenticatedCollectorRouteRouteWithChildren
   AuthenticatedRecyclerHomeRoute: typeof AuthenticatedRecyclerHomeRoute
   AuthenticatedRecyclerNearbyRoute: typeof AuthenticatedRecyclerNearbyRoute
   AuthenticatedRecyclerRegisterRoute: typeof AuthenticatedRecyclerRegisterRoute
@@ -467,13 +507,8 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
-  AuthenticatedCollectorAddEwasteRoute: AuthenticatedCollectorAddEwasteRoute,
-  AuthenticatedCollectorHistoryRoute: AuthenticatedCollectorHistoryRoute,
-  AuthenticatedCollectorHomeRoute: AuthenticatedCollectorHomeRoute,
-  AuthenticatedCollectorIdentifyRoute: AuthenticatedCollectorIdentifyRoute,
-  AuthenticatedCollectorNearbyRoute: AuthenticatedCollectorNearbyRoute,
-  AuthenticatedCollectorProfileRoute: AuthenticatedCollectorProfileRoute,
-  AuthenticatedCollectorRegisterRoute: AuthenticatedCollectorRegisterRoute,
+  AuthenticatedCollectorRouteRoute:
+    AuthenticatedCollectorRouteRouteWithChildren,
   AuthenticatedRecyclerHomeRoute: AuthenticatedRecyclerHomeRoute,
   AuthenticatedRecyclerNearbyRoute: AuthenticatedRecyclerNearbyRoute,
   AuthenticatedRecyclerRegisterRoute: AuthenticatedRecyclerRegisterRoute,
