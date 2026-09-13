@@ -1,11 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 
-/** Full lifecycle of a waste listing. A listing is only complete after a real handover. */
+/** Full lifecycle of a waste listing. The recycler is the buyer, the collector is the seller. */
 export type ListingStatus =
   | "draft"
-  | "pending_recycler"
-  | "offer_received"
-  | "recycler_selected"
+  | "available_for_purchase"
+  | "purchase_requested"
+  | "sale_accepted"
   | "pickup_scheduled"
   | "handed_over"
   | "recycler_confirmed"
@@ -16,7 +16,9 @@ export type ListingStatus =
 /** Kept as an alias so existing imports continue to work. */
 export type PickupStatus = ListingStatus;
 export type PaymentStatus = "unpaid" | "paid";
-export type OfferStatus = "offered" | "accepted" | "not_selected" | "declined" | "withdrawn";
+/** A purchase request raised by a recycler on a listing. */
+export type OfferStatus = "requested" | "accepted" | "rejected" | "not_selected" | "withdrawn";
+
 
 export interface Pickup {
   id: string;
@@ -33,6 +35,8 @@ export interface Pickup {
   longitude: number | null;
   pickup_address: string | null;
   indicative_price: number | null;
+  asking_price: number | null;
+
   selected_offer_id: string | null;
   agreed_price_per_kg: number | null;
   pickup_date: string | null;
