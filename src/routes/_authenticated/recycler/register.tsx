@@ -26,6 +26,12 @@ function RecyclerRegister() {
   const [location, setLocation] = useState("");
   const [rate, setRate] = useState("");
   const [materials, setMaterials] = useState<string[]>([]);
+  const [contactPerson, setContactPerson] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [operatingArea, setOperatingArea] = useState("");
+  const [registrationNumber, setRegistrationNumber] = useState("");
+  const [description, setDescription] = useState("");
+  const [businessHours, setBusinessHours] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,6 +67,12 @@ function RecyclerRegister() {
         location: location.trim() || null,
         materials,
         ratePerKg: rate.trim() ? Number(rate) : null,
+        contactPerson: contactPerson.trim() || null,
+        contactPhone: contactPhone.trim() || null,
+        operatingArea: operatingArea.trim() || null,
+        registrationNumber: registrationNumber.trim() || null,
+        description: description.trim() || null,
+        businessHours: businessHours.trim() || null,
       });
       navigate({ to: "/recycler/home" });
     } catch (err) {
@@ -105,6 +117,78 @@ function RecyclerRegister() {
               className="h-12 w-full rounded-lg border border-border bg-background px-3 text-base outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="cperson" className="mb-1.5 block text-sm font-medium text-foreground">
+                Contact person
+              </label>
+              <input
+                id="cperson"
+                value={contactPerson}
+                onChange={(e) => setContactPerson(e.target.value)}
+                className="h-12 w-full rounded-lg border border-border bg-background px-3 text-base outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label htmlFor="cphone" className="mb-1.5 block text-sm font-medium text-foreground">
+                Contact number
+              </label>
+              <input
+                id="cphone"
+                inputMode="tel"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                className="h-12 w-full rounded-lg border border-border bg-background px-3 text-base outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label htmlFor="oarea" className="mb-1.5 block text-sm font-medium text-foreground">
+                Operating area
+              </label>
+              <input
+                id="oarea"
+                value={operatingArea}
+                onChange={(e) => setOperatingArea(e.target.value)}
+                placeholder="Districts or areas you collect from"
+                className="h-12 w-full rounded-lg border border-border bg-background px-3 text-base outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label htmlFor="regno" className="mb-1.5 block text-sm font-medium text-foreground">
+                Registration number
+              </label>
+              <input
+                id="regno"
+                value={registrationNumber}
+                onChange={(e) => setRegistrationNumber(e.target.value)}
+                className="h-12 w-full rounded-lg border border-border bg-background px-3 text-base outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label htmlFor="bhours" className="mb-1.5 block text-sm font-medium text-foreground">
+                Business hours
+              </label>
+              <input
+                id="bhours"
+                value={businessHours}
+                onChange={(e) => setBusinessHours(e.target.value)}
+                placeholder="e.g. Mon-Sat, 9 am to 7 pm"
+                className="h-12 w-full rounded-lg border border-border bg-background px-3 text-base outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="bdesc" className="mb-1.5 block text-sm font-medium text-foreground">
+              About your organisation
+            </label>
+            <textarea
+              id="bdesc"
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-base outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
           <div>
             <span className="mb-1.5 block text-sm font-medium text-foreground">Materials you accept</span>
             <div className="flex flex-wrap gap-2">
@@ -139,6 +223,9 @@ function RecyclerRegister() {
             <p className="mt-1 text-xs text-muted-foreground">
               This is your own rate. The app never invents a market price.
             </p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              An administrator reviews your organisation before collectors can see it or receive your offers.
+            </p>
           </div>
           <button
             type="submit"
@@ -146,7 +233,7 @@ function RecyclerRegister() {
             className="flex h-13 w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-base font-semibold text-primary-foreground disabled:opacity-50"
           >
             {busy && <Loader2 className="size-4 animate-spin" aria-hidden />}
-            SAVE & CONTINUE
+            SUBMIT FOR APPROVAL
           </button>
           {error && (
             <p role="alert" className="rounded-lg border border-destructive/30 px-3 py-2 text-sm text-destructive">
