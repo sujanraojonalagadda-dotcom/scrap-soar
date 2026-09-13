@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kabadiwala Connect — Collector Sign In" },
+      { title: "Kabadiwala Connect — Sign In" },
       {
         name: "description",
         content:
