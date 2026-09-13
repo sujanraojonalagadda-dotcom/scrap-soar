@@ -72,23 +72,32 @@ export interface RecyclerOffer {
 
 export const STATUS_LABEL: Record<ListingStatus, string> = {
   draft: "Draft",
-  pending_recycler: "Waiting for recyclers",
-  offer_received: "Offers received",
-  recycler_selected: "Recycler selected",
+  available_for_purchase: "Available for purchase",
+  purchase_requested: "Purchase requested",
+  sale_accepted: "Sale accepted",
   pickup_scheduled: "Pickup scheduled",
   handed_over: "Handed over",
   recycler_confirmed: "Recycler confirmed",
   completed: "Completed",
-  rejected: "Declined",
+  rejected: "Rejected",
   cancelled: "Cancelled",
+};
+
+export const OFFER_STATUS_LABEL: Record<OfferStatus, string> = {
+  requested: "Purchase requested",
+  accepted: "Accepted",
+  rejected: "Rejected",
+  not_selected: "Not selected",
+  withdrawn: "Withdrawn",
 };
 
 export function statusTone(status: ListingStatus): string {
   if (status === "completed") return "bg-brand-light text-brand-dark";
   if (status === "rejected" || status === "cancelled") return "bg-destructive/10 text-destructive";
-  if (status === "pending_recycler" || status === "draft") return "bg-muted text-muted-foreground";
+  if (status === "available_for_purchase" || status === "draft") return "bg-muted text-muted-foreground";
   return "bg-warning-light text-warning-dark";
 }
+
 
 export interface CreatePickupInput {
   id?: string;
