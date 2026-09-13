@@ -134,8 +134,12 @@ export type Database = {
       recyclers: {
         Row: {
           address: string | null
+          business_hours: string | null
           city: string | null
+          contact_person: string | null
+          contact_phone: string | null
           created_at: string
+          description: string | null
           id: string
           latitude: number | null
           location: string | null
@@ -144,18 +148,26 @@ export type Database = {
           longitude: number | null
           materials: string[]
           name: string
+          operating_area: string | null
           postal_code: string | null
           rate_per_kg: number | null
+          registration_number: string | null
           state: string | null
           updated_at: string
           user_id: string
           verification_date: string | null
+          verification_note: string | null
+          verification_status: string
           verified: boolean
         }
         Insert: {
           address?: string | null
+          business_hours?: string | null
           city?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           latitude?: number | null
           location?: string | null
@@ -164,18 +176,26 @@ export type Database = {
           longitude?: number | null
           materials?: string[]
           name: string
+          operating_area?: string | null
           postal_code?: string | null
           rate_per_kg?: number | null
+          registration_number?: string | null
           state?: string | null
           updated_at?: string
           user_id: string
           verification_date?: string | null
+          verification_note?: string | null
+          verification_status?: string
           verified?: boolean
         }
         Update: {
           address?: string | null
+          business_hours?: string | null
           city?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           latitude?: number | null
           location?: string | null
@@ -184,12 +204,16 @@ export type Database = {
           longitude?: number | null
           materials?: string[]
           name?: string
+          operating_area?: string | null
           postal_code?: string | null
           rate_per_kg?: number | null
+          registration_number?: string | null
           state?: string | null
           updated_at?: string
           user_id?: string
           verification_date?: string | null
+          verification_note?: string | null
+          verification_status?: string
           verified?: boolean
         }
         Relationships: []
