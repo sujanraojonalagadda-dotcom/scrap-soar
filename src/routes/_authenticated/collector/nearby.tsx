@@ -55,9 +55,8 @@ function NearbyRecyclersPage() {
         return;
       }
       setProfile(p);
-      const rec = p as unknown as Record<string, unknown>;
-      if (rec.latitude != null && rec.longitude != null) {
-        setOrigin({ latitude: Number(rec.latitude), longitude: Number(rec.longitude) });
+      if (p.latitude != null && p.longitude != null) {
+        setOrigin({ latitude: Number(p.latitude), longitude: Number(p.longitude) });
       }
       setLoading(false);
     });

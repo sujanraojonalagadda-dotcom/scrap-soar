@@ -52,9 +52,8 @@ function RecyclerNearbyPage() {
   }, []);
 
   const origin = useMemo(() => {
-    const r = recycler as unknown as Record<string, unknown> | null;
-    if (r?.latitude != null && r?.longitude != null) {
-      return { latitude: Number(r.latitude), longitude: Number(r.longitude) };
+    if (recycler?.latitude != null && recycler?.longitude != null) {
+      return { latitude: Number(recycler.latitude), longitude: Number(recycler.longitude) };
     }
     return null;
   }, [recycler]);
