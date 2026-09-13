@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Loader2, LogOut, Recycle, IndianRupee } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getMyRecycler, updateRate, type Recycler } from "@/lib/services/recyclerService";
+import { getMyRecycler, updateRate, VERIFICATION_LABEL, type Recycler } from "@/lib/services/recyclerService";
 import { listRecyclerPickups, type Pickup } from "@/lib/services/transactionService";
 import { formatRupees } from "@/lib/services/priceService";
 import { signOut } from "@/lib/services/authService";
@@ -65,8 +65,10 @@ function RecyclerHome() {
     );
   }
 
-  const pending = pickups.filter((p) => p.status === "pending").length;
-  const inProgress = pickups.filter((p) => p.status === "accepted" || p.status === "confirmed").length;
+  const pending = pickups.filter((p) => p.status === "recycler_selected").length;
+  const inProgress = pickups.filter((p) =>
+    ["pickup_scheduled", "handed_over", "recycler_confirmed"].includes(p.status),
+  ).length;
   const completed = pickups.filter((p) => p.status === "completed").length;
   const paidTotal = pickups
     .filter((p) => p.payment_status === "paid")
@@ -80,6 +82,9 @@ function RecyclerHome() {
           <span className="font-bold tracking-tight">KABADIWALA CONNECT — RECYCLER</span>
         </div>
         <div className="flex items-center gap-3">
+          <Link to="/recycler/available" className="rounded-lg bg-card px-3 py-2 text-sm font-medium text-foreground">
+            Available waste
+          </Link>
           <Link to="/recycler/requests" className="rounded-lg bg-card px-3 py-2 text-sm font-medium text-foreground">
             Requests
           </Link>
@@ -103,8 +108,16 @@ function RecyclerHome() {
           {recycler?.verified ? "Verified" : "Verification pending"}
         </p>
 
+        {recycler && !recycler.verified && (
+          <p className="mt-4 rounded-xl border border-warning bg-warning-light p-4 text-sm text-warning-dark">
+            {VERIFICATION_LABEL[recycler.verification_status]}. You can browse and offer on collector listings once an
+            administrator approves your organisation.
+            {recycler.verification_note ? ` Admin note: ${recycler.verification_note}` : ""}
+          </p>
+        )}
+
         <div className="mt-5 grid gap-3 sm:grid-cols-4">
-          <Stat label="Pending" value={pending} />
+          <Stat label="Awaiting your accept" value={pending} />
           <Stat label="In progress" value={inProgress} />
           <Stat label="Completed" value={completed} />
           <Stat label="Paid out" value={formatRupees(paidTotal)} />
@@ -139,13 +152,20 @@ function RecyclerHome() {
 
         <div className="mt-6 rounded-xl border border-border bg-card p-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">Latest collection requests</h2>
-            <Link to="/recycler/requests" className="text-sm text-info underline">
-              View all
-            </Link>
+            <h2 className="text-sm font-semibold text-foreground">Latest collections</h2>
+            <div className="flex gap-3">
+              <Link to="/recycler/available" className="text-sm text-info underline">
+                Available waste
+              </Link>
+              <Link to="/recycler/requests" className="text-sm text-info underline">
+                View all
+              </Link>
+            </div>
           </div>
           {pickups.length === 0 ? (
-            <p className="mt-3 text-sm text-muted-foreground">No collection requests yet.</p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              No collections assigned yet. Send an offer on available e-waste to get started.
+            </p>
           ) : (
             <ul className="mt-3 divide-y divide-border">
               {pickups.slice(0, 5).map((p) => (
