@@ -44,7 +44,7 @@ function Requests() {
     });
   }, []);
 
-  const pendingOffers = offers.filter((o) => o.status === "offered");
+  const pendingOffers = offers.filter((o) => o.status === "requested");
 
   return (
     <main className="min-h-screen bg-muted pb-12">

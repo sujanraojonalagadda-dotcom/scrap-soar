@@ -65,7 +65,7 @@ function RecyclerHome() {
     );
   }
 
-  const pending = pickups.filter((p) => p.status === "recycler_selected").length;
+  const pending = pickups.filter((p) => p.status === "sale_accepted").length;
   const inProgress = pickups.filter((p) =>
     ["pickup_scheduled", "handed_over", "recycler_confirmed"].includes(p.status),
   ).length;
