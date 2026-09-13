@@ -54,6 +54,9 @@ function AddEWaste() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [address, setAddress] = useState("");
+  const [askingPrice, setAskingPrice] = useState("");
+  const [posted, setPosted] = useState(false);
+
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [busy, setBusy] = useState(false);
