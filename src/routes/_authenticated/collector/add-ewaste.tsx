@@ -14,6 +14,8 @@ import {
   savePickupDraft,
 } from "@/lib/services/offlineService";
 import { parsePickupSpeech, speakPrice } from "@/lib/services/voiceService";
+import { startAudioRecording } from "@/lib/services/audioRecorder";
+import { transcribeVoice } from "@/lib/services/transcriptionService";
 
 export const Route = createFileRoute("/_authenticated/collector/add-ewaste")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -50,33 +52,13 @@ function AddEWaste() {
   const [userId, setUserId] = useState<string | null>(null);
   const [language, setLanguage] = useState<"en" | "hi">("en");
   const [listening, setListening] = useState(false);
-  const [voiceSupported, setVoiceSupported] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(true);
   const [transcript, setTranscript] = useState<string | null>(null);
-  const [recognition, setRecognition] = useState<{ start: () => void; stop: () => void } | null>(null);
+  const [stopRecording, setStopRecording] = useState<(() => Promise<Blob>) | null>(null);
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
-    const SpeechRecognition = (window as unknown as {
-      SpeechRecognition?: new () => {
-        lang: string;
-        interimResults: boolean;
-        onresult: ((event: { results: { 0: { 0: { transcript: string } } }[] }) => void) | null;
-        onerror: (() => void) | null;
-        onend: (() => void) | null;
-        start: () => void;
-        stop: () => void;
-      };
-      webkitSpeechRecognition?: new () => {
-        lang: string;
-        interimResults: boolean;
-        onresult: ((event: { results: { 0: { 0: { transcript: string } } }[] }) => void) | null;
-        onerror: (() => void) | null;
-        onend: (() => void) | null;
-        start: () => void;
-        stop: () => void;
-      };
-    }).SpeechRecognition ?? (window as unknown as { webkitSpeechRecognition?: new () => any }).webkitSpeechRecognition;
-    setVoiceSupported(Boolean(SpeechRecognition));
+    setVoiceSupported(Boolean(navigator.mediaDevices?.getUserMedia && window.AudioContext));
     setOnline(navigator.onLine);
     const updateOnline = () => setOnline(navigator.onLine);
     window.addEventListener("online", updateOnline);
@@ -156,32 +138,35 @@ function AddEWaste() {
     }
   }
 
-  function toggleListening() {
+  async function toggleListening() {
     if (listening) {
-      recognition?.stop();
+      if (!stopRecording) return;
+      setListening(false);
+      setBusy(true);
+      try {
+        const audio = await stopRecording();
+        const spoken = await transcribeVoice(audio, language);
+        setTranscript(spoken);
+        const parsed = parsePickupSpeech(spoken);
+        if (parsed.category) setCategory(parsed.category);
+        if (parsed.weight) setWeight(parsed.weight);
+        if (parsed.condition) setCondition(parsed.condition);
+        if (!parsed.category && !parsed.weight && !parsed.condition) setError("I couldn't find an item, weight or condition in that speech. Please edit the fields manually.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Voice input could not be completed.");
+      } finally {
+        setStopRecording(null);
+        setBusy(false);
+      }
       return;
     }
-    const Recognition = (window as unknown as { SpeechRecognition?: new () => any; webkitSpeechRecognition?: new () => any }).SpeechRecognition
-      ?? (window as unknown as { webkitSpeechRecognition?: new () => any }).webkitSpeechRecognition;
-    if (!Recognition) return;
-    const next = new Recognition();
-    next.lang = language === "hi" ? "hi-IN" : "en-IN";
-    next.interimResults = false;
-    next.onresult = (event: { results: ArrayLike<{ 0?: { transcript?: string } }> }) => {
-      const spoken = event.results[0]?.[0]?.transcript ?? "";
-      setTranscript(spoken);
-      const parsed = parsePickupSpeech(spoken);
-      if (parsed.category) setCategory(parsed.category);
-      if (parsed.weight) setWeight(parsed.weight);
-      if (parsed.condition) setCondition(parsed.condition);
-      if (!parsed.category && !parsed.weight && !parsed.condition) setError("I couldn't find an item, weight or condition in that speech. Please edit the fields manually.");
-    };
-    next.onerror = () => setError("Voice input could not start. Check microphone permission or enter the details manually.");
-    next.onend = () => setListening(false);
-    setRecognition(next);
     setError(null);
-    setListening(true);
-    next.start();
+    try {
+      setStopRecording(() => await startAudioRecording());
+      setListening(true);
+    } catch {
+      setError("Microphone access is needed for voice input. You can enter the details manually.");
+    }
   }
 
   return (
@@ -205,12 +190,12 @@ function AddEWaste() {
                 <option value="en">EN</option>
                 <option value="hi">हिं</option>
               </select>
-              <button type="button" onClick={toggleListening} disabled={!voiceSupported} aria-label={listening ? "Stop listening" : "Start voice input"} className={`flex size-10 items-center justify-center rounded-lg border ${listening ? "border-destructive text-destructive" : "border-brand text-brand-dark"} disabled:opacity-40`}>
+              <button type="button" onClick={toggleListening} disabled={!voiceSupported || busy} aria-label={listening ? "Stop listening" : "Start voice input"} className={`flex size-10 items-center justify-center rounded-lg border ${listening ? "border-destructive text-destructive" : "border-brand text-brand-dark"} disabled:opacity-40`}>
                 {listening ? <Square className="size-4" aria-hidden /> : <Mic className="size-5" aria-hidden />}
               </button>
             </div>
           </div>
-          {listening && <p className="mt-2 text-sm font-medium text-brand-dark">Listening…</p>}
+          {listening && <p className="mt-2 text-sm font-medium text-brand-dark">Listening… tap stop when finished.</p>}
           {transcript && <p className="mt-2 text-sm text-muted-foreground">Heard: “{transcript}”</p>}
           {!voiceSupported && <p className="mt-2 text-xs text-muted-foreground">Voice input is not supported in this browser. You can use the fields below.</p>}
         </div>
