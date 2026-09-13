@@ -12,11 +12,12 @@ export interface Recycler {
   verified: boolean;
   verification_date: string | null;
   verification_status: VerificationStatus;
-  verification_note: string | null;
-  contact_person: string | null;
-  contact_phone: string | null;
+  /** Withheld unless the viewer is authorised to see private details. */
+  verification_note?: string | null;
+  contact_person?: string | null;
+  contact_phone?: string | null;
   operating_area: string | null;
-  registration_number: string | null;
+  registration_number?: string | null;
   description: string | null;
   business_hours: string | null;
   created_at: string;
@@ -111,10 +112,10 @@ export async function createRecycler(input: OrganisationInput & { userId: string
       description: input.description ?? null,
       business_hours: input.businessHours ?? null,
     })
-    .select()
+    .select(SAFE_COLUMNS)
     .single();
   if (error) throw new Error(error.message);
-  return data as Recycler;
+  return data as unknown as Recycler;
 }
 
 /** Recycler edits their own organisation profile. Approval is decided by an admin. */
