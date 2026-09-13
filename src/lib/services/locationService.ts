@@ -145,29 +145,42 @@ export async function listNearbyRecyclers(origin: GeoPoint, material?: string): 
     .not("latitude", "is", null)
     .not("longitude", "is", null);
   if (error) throw new Error(error.message);
-  let rows = (data ?? []) as Array<Record<string, unknown>>;
+  interface RecyclerRow {
+    id: string;
+    name: string;
+    materials: string[] | null;
+    rate_per_kg: number | null;
+    verified: boolean;
+    address: string | null;
+    city: string | null;
+    state: string | null;
+    postal_code: string | null;
+    location_updated_at: string | null;
+    location_sharing_enabled: boolean;
+    latitude: number;
+    longitude: number;
+  }
+  let rows = (data ?? []) as unknown as RecyclerRow[];
   if (material) {
-    rows = rows.filter((r) => Array.isArray(r.materials) && (r.materials as string[]).includes(material));
+    rows = rows.filter((r) => Array.isArray(r.materials) && r.materials.includes(material));
   }
   return rows
-    .map((r) => {
-      const point = { latitude: Number(r.latitude), longitude: Number(r.longitude) };
-      return {
-        id: String(r.id),
-        name: String(r.name),
-        materials: (r.materials as string[]) ?? [],
-        rate_per_kg: (r.rate_per_kg as number | null) ?? null,
-        verified: Boolean(r.verified),
-        address: (r.address as string | null) ?? null,
-        city: (r.city as string | null) ?? null,
-        state: (r.state as string | null) ?? null,
-        postal_code: (r.postal_code as string | null) ?? null,
-        location_updated_at: (r.location_updated_at as string | null) ?? null,
-        location_sharing_enabled: Boolean(r.location_sharing_enabled),
-        ...point,
-        distanceKm: haversineKm(origin, point),
-      } satisfies NearbyRecycler;
-    })
+    .map((r) => ({
+      id: r.id,
+      name: r.name,
+      materials: r.materials ?? [],
+      rate_per_kg: r.rate_per_kg,
+      verified: r.verified,
+      address: r.address,
+      city: r.city,
+      state: r.state,
+      postal_code: r.postal_code,
+      location_updated_at: r.location_updated_at,
+      location_sharing_enabled: r.location_sharing_enabled,
+      latitude: Number(r.latitude),
+      longitude: Number(r.longitude),
+      distanceKm: haversineKm(origin, { latitude: Number(r.latitude), longitude: Number(r.longitude) }),
+    }))
     .sort((a, b) => a.distanceKm - b.distanceKm);
 }
 
@@ -180,22 +193,31 @@ export async function listSharingCollectors(origin: GeoPoint): Promise<NearbyCol
     .not("latitude", "is", null)
     .not("longitude", "is", null);
   if (error) throw new Error(error.message);
-  return ((data ?? []) as Array<Record<string, unknown>>)
-    .map((p) => {
-      const point = { latitude: Number(p.latitude), longitude: Number(p.longitude) };
-      return {
-        id: String(p.id),
-        name: String(p.name),
-        address: (p.address as string | null) ?? null,
-        city: (p.city as string | null) ?? null,
-        state: (p.state as string | null) ?? null,
-        postal_code: (p.postal_code as string | null) ?? null,
-        location_updated_at: (p.location_updated_at as string | null) ?? null,
-        location_sharing_enabled: true,
-        ...point,
-        distanceKm: haversineKm(origin, point),
-      } satisfies NearbyCollector;
-    })
+  interface ProfileRow {
+    id: string;
+    name: string;
+    address: string | null;
+    city: string | null;
+    state: string | null;
+    postal_code: string | null;
+    location_updated_at: string | null;
+    latitude: number;
+    longitude: number;
+  }
+  return ((data ?? []) as unknown as ProfileRow[])
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      address: p.address,
+      city: p.city,
+      state: p.state,
+      postal_code: p.postal_code,
+      location_updated_at: p.location_updated_at,
+      location_sharing_enabled: true,
+      latitude: Number(p.latitude),
+      longitude: Number(p.longitude),
+      distanceKm: haversineKm(origin, { latitude: Number(p.latitude), longitude: Number(p.longitude) }),
+    }))
     .sort((a, b) => a.distanceKm - b.distanceKm);
 }
 
