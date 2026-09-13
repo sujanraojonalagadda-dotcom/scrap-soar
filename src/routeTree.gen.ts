@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedCollectorRouteRouteImport } from './routes/_authenticated/collector/route'
+import { Route as AuthenticatedRecyclerRouteRouteImport } from './routes/_authenticated/recycler/route'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as AuthenticatedAdminCollectorsRouteImport } from './routes/_authenticated/admin/collectors'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
@@ -49,6 +50,12 @@ const AuthenticatedCollectorRouteRoute =
   AuthenticatedCollectorRouteRouteImport.update({
     id: '/collector',
     path: '/collector',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRecyclerRouteRoute =
+  AuthenticatedRecyclerRouteRouteImport.update({
+    id: '/recycler',
+    path: '/recycler',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
@@ -124,39 +131,40 @@ const AuthenticatedCollectorRegisterRoute =
   } as any)
 const AuthenticatedRecyclerHomeRoute =
   AuthenticatedRecyclerHomeRouteImport.update({
-    id: '/recycler/home',
-    path: '/recycler/home',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/home',
+    path: '/home',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 const AuthenticatedRecyclerNearbyRoute =
   AuthenticatedRecyclerNearbyRouteImport.update({
-    id: '/recycler/nearby',
-    path: '/recycler/nearby',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/nearby',
+    path: '/nearby',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 const AuthenticatedRecyclerRegisterRoute =
   AuthenticatedRecyclerRegisterRouteImport.update({
-    id: '/recycler/register',
-    path: '/recycler/register',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/register',
+    path: '/register',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 const AuthenticatedRecyclerRequestsRoute =
   AuthenticatedRecyclerRequestsRouteImport.update({
-    id: '/recycler/requests',
-    path: '/recycler/requests',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/requests',
+    path: '/requests',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 const AuthenticatedRecyclerRequestIdRoute =
   AuthenticatedRecyclerRequestIdRouteImport.update({
-    id: '/recycler/request/$id',
-    path: '/recycler/request/$id',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/request/$id',
+    path: '/request/$id',
+    getParentRoute: () => AuthenticatedRecyclerRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
+  '/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
   '/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -179,6 +187,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
+  '/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
   '/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -203,6 +212,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/collector': typeof AuthenticatedCollectorRouteRouteWithChildren
+  '/_authenticated/recycler': typeof AuthenticatedRecyclerRouteRouteWithChildren
   '/api/transcribe': typeof ApiTranscribeRoute
   '/_authenticated/admin/collectors': typeof AuthenticatedAdminCollectorsRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/collector'
+    | '/recycler'
     | '/api/transcribe'
     | '/admin/collectors'
     | '/admin/dashboard'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/collector'
+    | '/recycler'
     | '/api/transcribe'
     | '/admin/collectors'
     | '/admin/dashboard'
@@ -272,6 +284,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_authenticated/admin'
     | '/_authenticated/collector'
+    | '/_authenticated/recycler'
     | '/api/transcribe'
     | '/_authenticated/admin/collectors'
     | '/_authenticated/admin/dashboard'
@@ -325,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: '/collector'
       fullPath: '/collector'
       preLoaderRoute: typeof AuthenticatedCollectorRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recycler': {
+      id: '/_authenticated/recycler'
+      path: '/recycler'
+      fullPath: '/recycler'
+      preLoaderRoute: typeof AuthenticatedRecyclerRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/transcribe': {
@@ -413,38 +433,38 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/recycler/home': {
       id: '/_authenticated/recycler/home'
-      path: '/recycler/home'
+      path: '/home'
       fullPath: '/recycler/home'
       preLoaderRoute: typeof AuthenticatedRecyclerHomeRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
     '/_authenticated/recycler/nearby': {
       id: '/_authenticated/recycler/nearby'
-      path: '/recycler/nearby'
+      path: '/nearby'
       fullPath: '/recycler/nearby'
       preLoaderRoute: typeof AuthenticatedRecyclerNearbyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
     '/_authenticated/recycler/register': {
       id: '/_authenticated/recycler/register'
-      path: '/recycler/register'
+      path: '/register'
       fullPath: '/recycler/register'
       preLoaderRoute: typeof AuthenticatedRecyclerRegisterRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
     '/_authenticated/recycler/requests': {
       id: '/_authenticated/recycler/requests'
-      path: '/recycler/requests'
+      path: '/requests'
       fullPath: '/recycler/requests'
       preLoaderRoute: typeof AuthenticatedRecyclerRequestsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
     '/_authenticated/recycler/request/$id': {
       id: '/_authenticated/recycler/request/$id'
-      path: '/recycler/request/$id'
+      path: '/request/$id'
       fullPath: '/recycler/request/$id'
       preLoaderRoute: typeof AuthenticatedRecyclerRequestIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecyclerRouteRoute
     }
   }
 }
@@ -495,9 +515,7 @@ const AuthenticatedCollectorRouteRouteWithChildren =
     AuthenticatedCollectorRouteRouteChildren,
   )
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
-  AuthenticatedCollectorRouteRoute: typeof AuthenticatedCollectorRouteRouteWithChildren
+interface AuthenticatedRecyclerRouteRouteChildren {
   AuthenticatedRecyclerHomeRoute: typeof AuthenticatedRecyclerHomeRoute
   AuthenticatedRecyclerNearbyRoute: typeof AuthenticatedRecyclerNearbyRoute
   AuthenticatedRecyclerRegisterRoute: typeof AuthenticatedRecyclerRegisterRoute
@@ -505,15 +523,31 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRecyclerRequestIdRoute: typeof AuthenticatedRecyclerRequestIdRoute
 }
 
+const AuthenticatedRecyclerRouteRouteChildren: AuthenticatedRecyclerRouteRouteChildren =
+  {
+    AuthenticatedRecyclerHomeRoute: AuthenticatedRecyclerHomeRoute,
+    AuthenticatedRecyclerNearbyRoute: AuthenticatedRecyclerNearbyRoute,
+    AuthenticatedRecyclerRegisterRoute: AuthenticatedRecyclerRegisterRoute,
+    AuthenticatedRecyclerRequestsRoute: AuthenticatedRecyclerRequestsRoute,
+    AuthenticatedRecyclerRequestIdRoute: AuthenticatedRecyclerRequestIdRoute,
+  }
+
+const AuthenticatedRecyclerRouteRouteWithChildren =
+  AuthenticatedRecyclerRouteRoute._addFileChildren(
+    AuthenticatedRecyclerRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedCollectorRouteRoute: typeof AuthenticatedCollectorRouteRouteWithChildren
+  AuthenticatedRecyclerRouteRoute: typeof AuthenticatedRecyclerRouteRouteWithChildren
+}
+
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedCollectorRouteRoute:
     AuthenticatedCollectorRouteRouteWithChildren,
-  AuthenticatedRecyclerHomeRoute: AuthenticatedRecyclerHomeRoute,
-  AuthenticatedRecyclerNearbyRoute: AuthenticatedRecyclerNearbyRoute,
-  AuthenticatedRecyclerRegisterRoute: AuthenticatedRecyclerRegisterRoute,
-  AuthenticatedRecyclerRequestsRoute: AuthenticatedRecyclerRequestsRoute,
-  AuthenticatedRecyclerRequestIdRoute: AuthenticatedRecyclerRequestIdRoute,
+  AuthenticatedRecyclerRouteRoute: AuthenticatedRecyclerRouteRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
