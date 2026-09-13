@@ -54,6 +54,9 @@ function AddEWaste() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [address, setAddress] = useState("");
+  const [askingPrice, setAskingPrice] = useState("");
+  const [posted, setPosted] = useState(false);
+
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -163,6 +166,7 @@ function AddEWaste() {
         latitude: coords?.latitude ?? null,
         longitude: coords?.longitude ?? null,
         pickupAddress: address.trim() || null,
+        askingPrice: askingPrice.trim() && Number(askingPrice) > 0 ? Number(askingPrice) : null,
       };
       if (!navigator.onLine) queuePickup(input);
       else {
@@ -174,7 +178,8 @@ function AddEWaste() {
         }
       }
       clearPickupDraft(data.user.id);
-      navigate({ to: "/collector/history" });
+      setPosted(true);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save this listing.");
     } finally {
@@ -215,6 +220,36 @@ function AddEWaste() {
     }
   }
 
+  if (posted) {
+    return (
+      <main className="min-h-screen bg-muted px-4 py-10">
+        <div className="mx-auto max-w-md rounded-xl border border-brand bg-card p-6 text-center">
+          <h1 className="text-lg font-bold text-brand-dark">
+            {online ? "Your waste is now available to authorized recyclers." : "Saved on this device"}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {online
+              ? "Verified recyclers can now see it and send you a purchase request. You choose who buys it."
+              : "This listing will be sent to recyclers automatically once you are back online."}
+          </p>
+          <Link
+            to="/collector/history"
+            className="mt-5 flex h-12 w-full items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground"
+          >
+            View my listings
+          </Link>
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/collector/home" })}
+            className="mt-3 h-12 w-full rounded-lg border border-border text-sm font-medium text-foreground"
+          >
+            Back to home
+          </button>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-muted pb-10">
       <header className="flex items-center gap-3 bg-card px-4 py-4 shadow-sm">
@@ -223,6 +258,7 @@ function AddEWaste() {
         </Link>
         <h1 className="text-lg font-bold text-foreground">List E-Waste</h1>
       </header>
+
 
       <form onSubmit={handleSubmit} className="space-y-4 px-4 py-6">
         <div className="rounded-xl border border-border bg-card p-4">
@@ -393,8 +429,19 @@ function AddEWaste() {
           <p className="mt-1 text-xs text-muted-foreground">
             {price === null
               ? "A value appears once you enter a weight and verified recyclers have published rates."
-              : "Based on the average rate of verified recyclers. Recyclers will send you real offers."}
+              : "Based on the average rate of verified recyclers. Recyclers will send you real purchase requests."}
           </p>
+          <label htmlFor="ask" className="mt-4 mb-1.5 block text-sm font-medium text-foreground">
+            Your asking price per kg (₹, optional)
+          </label>
+          <input
+            id="ask"
+            inputMode="decimal"
+            value={askingPrice}
+            onChange={(e) => setAskingPrice(e.target.value)}
+            placeholder="e.g. 120"
+            className="h-12 w-full rounded-lg border border-border bg-background px-3 text-base outline-none focus:ring-2 focus:ring-ring"
+          />
         </div>
 
         <button
@@ -403,11 +450,12 @@ function AddEWaste() {
           className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-base font-semibold text-primary-foreground disabled:opacity-50"
         >
           {busy && <Loader2 className="size-4 animate-spin" aria-hidden />}
-          {!online ? "SAVE FOR SYNC" : "POST FOR RECYCLER OFFERS"}
+          {!online ? "SAVE FOR SYNC" : "LIST FOR PURCHASE"}
         </button>
         <p className="text-center text-xs text-muted-foreground">
-          Your listing stays open until you accept a recycler's offer.
+          Your listing stays open until you accept a recycler's purchase request.
         </p>
+
         {error && (
           <p role="alert" className="rounded-lg border border-destructive/30 bg-card px-3 py-2 text-sm text-destructive">
             {error}

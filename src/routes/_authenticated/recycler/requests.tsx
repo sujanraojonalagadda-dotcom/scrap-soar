@@ -44,7 +44,7 @@ function Requests() {
     });
   }, []);
 
-  const pendingOffers = offers.filter((o) => o.status === "offered");
+  const pendingOffers = offers.filter((o) => o.status === "requested");
 
   return (
     <main className="min-h-screen bg-muted pb-12">
@@ -60,7 +60,7 @@ function Requests() {
           to="/recycler/available"
           className="flex h-12 w-full items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground"
         >
-          Browse available e-waste
+          Browse available waste to buy
         </Link>
 
         {loading ? (
@@ -69,13 +69,13 @@ function Requests() {
           <>
             {pendingOffers.length > 0 && (
               <p className="mt-5 rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
-                {pendingOffers.length} of your {pendingOffers.length === 1 ? "offer is" : "offers are"} waiting for a
+                {pendingOffers.length} of your {pendingOffers.length === 1 ? "purchase request is" : "purchase requests are"} waiting for a
                 collector's decision.
               </p>
             )}
             {pickups.length === 0 ? (
               <p className="mt-5 rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
-                No collections assigned to you yet. Send offers on available e-waste to get started.
+                No collections assigned to you yet. Buy available waste to get started.
               </p>
             ) : (
               <ul className="mt-5 space-y-3">

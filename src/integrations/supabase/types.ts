@@ -221,6 +221,7 @@ export type Database = {
       transactions: {
         Row: {
           agreed_price_per_kg: number | null
+          asking_price: number | null
           category: string
           collector_id: string
           completed_at: string | null
@@ -257,6 +258,7 @@ export type Database = {
         }
         Insert: {
           agreed_price_per_kg?: number | null
+          asking_price?: number | null
           category: string
           collector_id: string
           completed_at?: string | null
@@ -293,6 +295,7 @@ export type Database = {
         }
         Update: {
           agreed_price_per_kg?: number | null
+          asking_price?: number | null
           category?: string
           collector_id?: string
           completed_at?: string | null

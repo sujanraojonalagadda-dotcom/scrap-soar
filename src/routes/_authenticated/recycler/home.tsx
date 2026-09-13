@@ -65,7 +65,7 @@ function RecyclerHome() {
     );
   }
 
-  const pending = pickups.filter((p) => p.status === "recycler_selected").length;
+  const pending = pickups.filter((p) => p.status === "sale_accepted").length;
   const inProgress = pickups.filter((p) =>
     ["pickup_scheduled", "handed_over", "recycler_confirmed"].includes(p.status),
   ).length;
@@ -117,7 +117,7 @@ function RecyclerHome() {
         )}
 
         <div className="mt-5 grid gap-3 sm:grid-cols-4">
-          <Stat label="Awaiting your accept" value={pending} />
+          <Stat label="Purchase accepted" value={pending} />
           <Stat label="In progress" value={inProgress} />
           <Stat label="Completed" value={completed} />
           <Stat label="Paid out" value={formatRupees(paidTotal)} />
@@ -164,7 +164,7 @@ function RecyclerHome() {
           </div>
           {pickups.length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">
-              No collections assigned yet. Send an offer on available e-waste to get started.
+              No collections assigned yet. Buy available waste to get started.
             </p>
           ) : (
             <ul className="mt-3 divide-y divide-border">

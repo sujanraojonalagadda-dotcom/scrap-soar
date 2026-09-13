@@ -98,7 +98,7 @@ function HistoryPage() {
         ) : (
           <ul className="space-y-3">
             {pickups.map((p) => {
-              const open = offers.filter((o) => o.waste_listing_id === p.id && o.status === "offered").length;
+              const open = offers.filter((o) => o.waste_listing_id === p.id && o.status === "requested").length;
               return (
                 <li key={p.id} className="rounded-xl border border-border bg-card p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -120,7 +120,7 @@ function HistoryPage() {
                   </div>
                   {open > 0 && (
                     <p className="mt-3 rounded-lg bg-brand-light px-3 py-2 text-sm font-medium text-brand-dark">
-                      {open} recycler {open === 1 ? "offer" : "offers"} waiting for your decision
+                      {open} purchase {open === 1 ? "request" : "requests"} waiting for your decision
                     </p>
                   )}
                   <Link

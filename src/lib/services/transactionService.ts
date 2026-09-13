@@ -1,11 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 
-/** Full lifecycle of a waste listing. A listing is only complete after a real handover. */
+/** Full lifecycle of a waste listing. The recycler is the buyer, the collector is the seller. */
 export type ListingStatus =
   | "draft"
-  | "pending_recycler"
-  | "offer_received"
-  | "recycler_selected"
+  | "available_for_purchase"
+  | "purchase_requested"
+  | "sale_accepted"
   | "pickup_scheduled"
   | "handed_over"
   | "recycler_confirmed"
@@ -16,7 +16,9 @@ export type ListingStatus =
 /** Kept as an alias so existing imports continue to work. */
 export type PickupStatus = ListingStatus;
 export type PaymentStatus = "unpaid" | "paid";
-export type OfferStatus = "offered" | "accepted" | "not_selected" | "declined" | "withdrawn";
+/** A purchase request raised by a recycler on a listing. */
+export type OfferStatus = "requested" | "accepted" | "rejected" | "not_selected" | "withdrawn";
+
 
 export interface Pickup {
   id: string;
@@ -33,6 +35,8 @@ export interface Pickup {
   longitude: number | null;
   pickup_address: string | null;
   indicative_price: number | null;
+  asking_price: number | null;
+
   selected_offer_id: string | null;
   agreed_price_per_kg: number | null;
   pickup_date: string | null;
@@ -68,23 +72,32 @@ export interface RecyclerOffer {
 
 export const STATUS_LABEL: Record<ListingStatus, string> = {
   draft: "Draft",
-  pending_recycler: "Waiting for recyclers",
-  offer_received: "Offers received",
-  recycler_selected: "Recycler selected",
+  available_for_purchase: "Available for purchase",
+  purchase_requested: "Purchase requested",
+  sale_accepted: "Sale accepted",
   pickup_scheduled: "Pickup scheduled",
   handed_over: "Handed over",
   recycler_confirmed: "Recycler confirmed",
   completed: "Completed",
-  rejected: "Declined",
+  rejected: "Rejected",
   cancelled: "Cancelled",
+};
+
+export const OFFER_STATUS_LABEL: Record<OfferStatus, string> = {
+  requested: "Purchase requested",
+  accepted: "Accepted",
+  rejected: "Rejected",
+  not_selected: "Not selected",
+  withdrawn: "Withdrawn",
 };
 
 export function statusTone(status: ListingStatus): string {
   if (status === "completed") return "bg-brand-light text-brand-dark";
   if (status === "rejected" || status === "cancelled") return "bg-destructive/10 text-destructive";
-  if (status === "pending_recycler" || status === "draft") return "bg-muted text-muted-foreground";
+  if (status === "available_for_purchase" || status === "draft") return "bg-muted text-muted-foreground";
   return "bg-warning-light text-warning-dark";
 }
+
 
 export interface CreatePickupInput {
   id?: string;
@@ -101,6 +114,8 @@ export interface CreatePickupInput {
   latitude?: number | null;
   longitude?: number | null;
   pickupAddress?: string | null;
+  askingPrice?: number | null;
+
 }
 
 export async function createPickup(input: CreatePickupInput): Promise<Pickup> {
@@ -122,7 +137,9 @@ export async function createPickup(input: CreatePickupInput): Promise<Pickup> {
       latitude: input.latitude ?? null,
       longitude: input.longitude ?? null,
       pickup_address: input.pickupAddress ?? null,
-      status: input.recyclerId ? "recycler_selected" : "pending_recycler",
+      asking_price: input.askingPrice ?? null,
+      status: input.recyclerId ? "sale_accepted" : "available_for_purchase",
+
     })
     .select()
     .single();
@@ -160,7 +177,7 @@ export async function listOpenListings(): Promise<Pickup[]> {
     .from("transactions")
     .select("*")
     .is("recycler_id", null)
-    .in("status", ["pending_recycler", "offer_received"])
+    .in("status", ["available_for_purchase", "purchase_requested"])
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return (data ?? []) as Pickup[];
@@ -225,7 +242,7 @@ export async function createOffer(input: CreateOfferInput): Promise<RecyclerOffe
   return data as RecyclerOffer;
 }
 
-/** Collector picks exactly one offer. Every other offer becomes "not selected". */
+/** Collector accepts exactly one purchase request. Every other request becomes "not selected". */
 export async function acceptOffer(listing: Pickup, offer: RecyclerOffer): Promise<void> {
   const { error } = await supabase
     .from("transactions")
@@ -235,7 +252,7 @@ export async function acceptOffer(listing: Pickup, offer: RecyclerOffer): Promis
       agreed_price_per_kg: offer.price_per_kg,
       indicative_price: offer.total_price,
       pickup_date: offer.pickup_date,
-      status: "recycler_selected",
+      status: "sale_accepted",
     })
     .eq("id", listing.id);
   if (error) throw new Error(error.message);
@@ -250,6 +267,26 @@ export async function acceptOffer(listing: Pickup, offer: RecyclerOffer): Promis
   if (others.error) throw new Error(others.error.message);
 }
 
+/** Collector turns down one purchase request; the listing stays open to other recyclers. */
+export async function rejectOffer(listing: Pickup, offer: RecyclerOffer): Promise<void> {
+  const rejected = await supabase.from("recycler_offers").update({ status: "rejected" }).eq("id", offer.id);
+  if (rejected.error) throw new Error(rejected.error.message);
+
+  const remaining = await supabase
+    .from("recycler_offers")
+    .select("id")
+    .eq("waste_listing_id", listing.id)
+    .eq("status", "requested");
+  if (remaining.error) throw new Error(remaining.error.message);
+  if ((remaining.data ?? []).length === 0) {
+    const { error } = await supabase
+      .from("transactions")
+      .update({ status: "available_for_purchase" })
+      .eq("id", listing.id);
+    if (error) throw new Error(error.message);
+  }
+}
+
 /* ------------------------------- transitions ------------------------------- */
 
 export async function recyclerAcceptRequest(id: string, pickupDate: string | null): Promise<void> {
@@ -260,17 +297,18 @@ export async function recyclerAcceptRequest(id: string, pickupDate: string | nul
   if (error) throw new Error(error.message);
 }
 
-/** Declining releases the listing back to the marketplace. */
+/** A recycler backing out releases the listing back to the marketplace. */
 export async function recyclerDeclineRequest(listing: Pickup): Promise<void> {
   if (listing.selected_offer_id) {
-    await supabase.from("recycler_offers").update({ status: "declined" }).eq("id", listing.selected_offer_id);
+    await supabase.from("recycler_offers").update({ status: "withdrawn" }).eq("id", listing.selected_offer_id);
   }
   const { error } = await supabase
     .from("transactions")
-    .update({ recycler_id: null, selected_offer_id: null, status: "pending_recycler" })
+    .update({ recycler_id: null, selected_offer_id: null, status: "available_for_purchase" })
     .eq("id", listing.id);
   if (error) throw new Error(error.message);
 }
+
 
 export interface HandoverInput {
   actualWeightKg: number;
