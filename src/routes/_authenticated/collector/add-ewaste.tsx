@@ -166,6 +166,7 @@ function AddEWaste() {
         latitude: coords?.latitude ?? null,
         longitude: coords?.longitude ?? null,
         pickupAddress: address.trim() || null,
+        askingPrice: askingPrice.trim() && Number(askingPrice) > 0 ? Number(askingPrice) : null,
       };
       if (!navigator.onLine) queuePickup(input);
       else {
@@ -177,7 +178,8 @@ function AddEWaste() {
         }
       }
       clearPickupDraft(data.user.id);
-      navigate({ to: "/collector/history" });
+      setPosted(true);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save this listing.");
     } finally {
