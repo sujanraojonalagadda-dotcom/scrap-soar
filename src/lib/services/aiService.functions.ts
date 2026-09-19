@@ -89,10 +89,7 @@ export const classifyEwaste = createServerFn({ method: "POST" })
     if (res.status === 401 || res.status === 403) {
       return { available: false, reason: "AI classification unavailable — the AI key was rejected" };
     }
-    if (!res.ok) {
-      console.error("[classify] gemini error", res.status, (await res.text().catch(() => "")).slice(0, 500));
-      return { available: false, reason: "AI classification unavailable" };
-    }
+    if (!res.ok) return { available: false, reason: "AI classification unavailable" };
 
     try {
       const body = (await res.json()) as {
