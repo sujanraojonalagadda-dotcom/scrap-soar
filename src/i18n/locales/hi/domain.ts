@@ -1,0 +1,42 @@
+export const domain = {
+  "status.draft": "ड्राफ़्ट",
+  "status.available_for_purchase": "खरीद के लिए उपलब्ध",
+  "status.purchase_requested": "खरीद का अनुरोध",
+  "status.sale_accepted": "बिक्री स्वीकृत",
+  "status.accepted": "स्वीकृत",
+  "status.pickup_scheduled": "पिकअप तय हुआ",
+  "status.handed_over": "सौंप दिया",
+  "status.recycler_confirmed": "रीसायकलर ने पुष्टि की",
+  "status.completed": "पूर्ण",
+  "status.rejected": "अस्वीकृत",
+  "status.cancelled": "रद्द",
+
+  "offerStatus.requested": "अनुरोध किया",
+  "offerStatus.accepted": "स्वीकृत",
+  "offerStatus.rejected": "अस्वीकृत",
+  "offerStatus.not_selected": "चयनित नहीं",
+  "offerStatus.withdrawn": "वापस लिया",
+
+  "category.Laptop": "लैपटॉप",
+  "category.Mobile": "मोबाइल फ़ोन",
+  "category.Monitor": "मॉनिटर",
+  "category.Television": "टेलीविज़न",
+  "category.Printer": "प्रिंटर",
+  "category.Keyboard": "कीबोर्ड",
+  "category.Mouse": "माउस",
+  "category.Cable": "केबल और तार",
+  "category.Battery": "बैटरी",
+  "category.Other": "अन्य",
+
+  "condition.working": "चालू",
+  "condition.partially_working": "आंशिक रूप से चालू",
+  "condition.not_working": "खराब",
+
+  "paymentMethod.upi": "यूपीआई",
+  "paymentMethod.cash": "नकद",
+  "paymentMethod.bank_transfer": "बैंक ट्रांसफ़र",
+
+  "confidence.high": "उच्च विश्वास",
+  "confidence.medium": "मध्यम विश्वास",
+  "confidence.low": "कम विश्वास",
+};
