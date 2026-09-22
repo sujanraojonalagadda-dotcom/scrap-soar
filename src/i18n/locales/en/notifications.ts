@@ -1,0 +1,18 @@
+export const notifications = {
+  "notif.purchase_request.title": "New recycler request",
+  "notif.purchase_request.message": "{org} is interested in buying your {category}.",
+  "notif.purchase_request_sent.title": "Purchase request submitted",
+  "notif.purchase_request_sent.message": "Your purchase request has been sent to the collector.",
+  "notif.purchase_accepted.title": "Purchase accepted",
+  "notif.purchase_accepted.message": "Collector accepted your purchase request.",
+  "notif.sale_accepted.title": "Sale accepted",
+  "notif.sale_accepted.message": "Your sale to {org} has been accepted.",
+  "notif.pickup_scheduled.title": "Pickup scheduled",
+  "notif.pickup_scheduled.message": "Pickup has been scheduled for {code}.",
+  "notif.handover_confirmed.title": "Handover confirmed",
+  "notif.handover_confirmed.message": "Collector marked the waste as handed over.",
+  "notif.completed.title": "Transaction completed",
+  "notif.completed.message": "Transaction {receipt} has been completed.",
+  "notif.fallback.org": "A recycler",
+  "notif.fallback.category": "waste",
+};
