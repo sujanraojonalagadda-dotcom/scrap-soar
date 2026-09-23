@@ -91,6 +91,19 @@ export const OFFER_STATUS_LABEL: Record<OfferStatus, string> = {
   withdrawn: "Withdrawn",
 };
 
+/** Translation keys for the stable database status values. */
+export function statusKey(status: string): string {
+  return `status.${status}`;
+}
+
+export function offerStatusKey(status: string): string {
+  return `offerStatus.${status}`;
+}
+
+export function categoryKey(category: string): string {
+  return `category.${category}`;
+}
+
 export function statusTone(status: ListingStatus): string {
   if (status === "completed") return "bg-brand-light text-brand-dark";
   if (status === "rejected" || status === "cancelled") return "bg-destructive/10 text-destructive";
