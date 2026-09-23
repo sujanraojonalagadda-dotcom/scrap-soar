@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { NetworkStatus } from "@/components/NetworkStatus";
+import { LanguageProvider } from "@/i18n/provider";
 
 function NotFoundComponent() {
   return (
@@ -119,9 +120,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NetworkStatus />
+      <LanguageProvider>
+        <NetworkStatus />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+        <Outlet />
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

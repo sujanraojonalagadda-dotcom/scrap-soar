@@ -77,4 +77,7 @@ export const common = {
   speakPrice: "Speak price",
   voiceUnavailable: "Voice input is not available right now.",
   priceUnavailable: "Price information is currently unavailable.",
+  "voice.estimatedPrice": "Your estimated price is {amount} rupees.",
+  "voice.filledFromSpeech": "Filled from your speech.",
+  "voice.notUnderstood": "Sorry, that was not understood. Please try again.",
 };

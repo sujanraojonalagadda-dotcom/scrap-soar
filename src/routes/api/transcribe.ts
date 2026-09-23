@@ -20,7 +20,8 @@ export const Route = createFileRoute("/api/transcribe")({
         if (audio.size > 14 * 1024 * 1024 || audio.type !== "audio/wav") return new Response("Please record a shorter voice message.", { status: 400 });
 
         const language = input.get("language");
-        const spoken = language === "hi" ? "Hindi" : language === "en" ? "English" : null;
+        const spoken =
+          language === "hi" ? "Hindi" : language === "mr" ? "Marathi" : language === "en" ? "English" : null;
         const bytes = new Uint8Array(await audio.arrayBuffer());
         let binary = "";
         for (let i = 0; i < bytes.length; i += 8192) {
