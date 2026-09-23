@@ -23,7 +23,7 @@ export async function transcribeVoice(audio: Blob, language: Lang): Promise<stri
     if (!line.startsWith("data:")) continue;
     try {
       const payload = JSON.parse(line.slice(5).trim());
-      if (typeof payload?.transcript === "string") transcript = payload.transcript;
+      if (typeof payload?.text === "string" && payload.text) transcript = payload.text;
     } catch {
       // ignore keep-alive lines
     }
