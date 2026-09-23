@@ -1,0 +1,18 @@
+export const notifications = {
+  "notif.purchase_request.title": "नवीन रीसायकलर विनंती",
+  "notif.purchase_request.message": "{org} यांना तुमचा {category} खरेदी करण्यात रस आहे.",
+  "notif.purchase_request_sent.title": "खरेदी विनंती पाठवली",
+  "notif.purchase_request_sent.message": "तुमची खरेदी विनंती कबाडीवाल्याला पाठवली आहे.",
+  "notif.purchase_accepted.title": "खरेदी स्वीकारली",
+  "notif.purchase_accepted.message": "कबाडीवाल्याने तुमची खरेदी विनंती स्वीकारली आहे.",
+  "notif.sale_accepted.title": "विक्री स्वीकारली",
+  "notif.sale_accepted.message": "{org} यांना तुमची विक्री स्वीकारली गेली आहे.",
+  "notif.pickup_scheduled.title": "पिकअप ठरले",
+  "notif.pickup_scheduled.message": "{code} साठी पिकअप ठरले आहे.",
+  "notif.handover_confirmed.title": "सुपूर्दगी पुष्ट झाली",
+  "notif.handover_confirmed.message": "कबाडीवाल्याने माल सुपूर्द केल्याची नोंद केली आहे.",
+  "notif.completed.title": "व्यवहार पूर्ण झाला",
+  "notif.completed.message": "व्यवहार {receipt} पूर्ण झाला आहे.",
+  "notif.fallback.org": "एक रीसायकलर",
+  "notif.fallback.category": "ई-कचरा",
+};
