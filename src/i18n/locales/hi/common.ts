@@ -77,4 +77,7 @@ export const common = {
   speakPrice: "कीमत सुनें",
   voiceUnavailable: "आवाज़ इनपुट अभी उपलब्ध नहीं है।",
   priceUnavailable: "कीमत की जानकारी अभी उपलब्ध नहीं है।",
+  "voice.estimatedPrice": "आपकी अनुमानित कीमत {amount} रुपये है।",
+  "voice.filledFromSpeech": "आपकी आवाज़ से भर दिया गया।",
+  "voice.notUnderstood": "माफ़ करें, समझ नहीं आया। फिर कोशिश करें।",
 };
