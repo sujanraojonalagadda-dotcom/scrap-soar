@@ -7,7 +7,7 @@ export async function transcribeVoice(audio: Blob, language: Lang): Promise<stri
   if (!token) throw new Error("Not signed in");
 
   const form = new FormData();
-  form.append("audio", audio, "speech.wav");
+  form.append("file", audio, "speech.wav");
   form.append("language", language);
 
   const response = await fetch("/api/transcribe", {
